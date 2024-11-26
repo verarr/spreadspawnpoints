@@ -13,6 +13,11 @@ import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
 
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin {
+    /**
+     * Redirects the method that gets the world spawn to an implementation
+     * that allows for player-specific default spawn points.
+     * @return the "world" spawn for this player
+     */
     @Redirect(
             method = "moveToSpawn(Lnet/minecraft/server/world/ServerWorld;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getSpawnPos()Lnet/minecraft/util/math/BlockPos;")

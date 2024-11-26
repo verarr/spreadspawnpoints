@@ -41,25 +41,20 @@ public class VanillaSpawnPointGenerator implements SpawnPointGenerator {
 
     /**
      * This method is ignored.
-     *
-     * @param spawnPoint spawnpoint to add
      */
     @Override
     public void add(Vector2i spawnPoint) {}
-
     /**
      * This method is ignored.
-     *
-     * @param spawnPoint spawnpoint to remove
      */
     @Override
     public void remove(Vector2i spawnPoint) {}
 
+    // NBTSerializable stuff (ignored)
     @Override
     public NbtCompound writeNbt() {
         return new NbtCompound();
     }
-
     @Override
     public void modifyFromNbt(NbtCompound tag) {}
 }
