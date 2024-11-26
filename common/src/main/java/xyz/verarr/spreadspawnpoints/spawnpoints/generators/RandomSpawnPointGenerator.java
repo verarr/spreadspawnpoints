@@ -62,20 +62,17 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
 
     /**
      * This method is ignored.
-     *
-     * @param spawnPoint spawnpoint to add
      */
     @Override
     public void add(Vector2i spawnPoint) {}
 
     /**
      * This method is ignored.
-     *
-     * @param spawnPoint spawnpoint to remove
      */
     @Override
     public void remove(Vector2i spawnPoint) {}
 
+    // NBTSerializable stuff
     @Override
     public NbtCompound writeNbt() {
         NbtCompound nbt = new NbtCompound();
@@ -86,7 +83,6 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
         SpreadSpawnPoints.LOGGER.info("Wrote RSPG NBT");
         return nbt;
     }
-
     @Override
     public void modifyFromNbt(NbtCompound tag) {
         Vector2i lowerBounds = new Vector2i(
