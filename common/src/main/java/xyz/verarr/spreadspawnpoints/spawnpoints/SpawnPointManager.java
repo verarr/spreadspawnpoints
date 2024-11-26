@@ -163,7 +163,7 @@ public class SpawnPointManager extends PersistentState {
             NbtCompound playerNbt = playerSpawnPointsNbt.getCompound(key);
             Vector2i spawnPoint = new Vector2i(
                     playerNbt.getInt("x"),
-                    playerNbt.getInt("y")
+                    playerNbt.getInt("z")
             );
             spawnPointManager.playerSpawnPoints.put(uuid, spawnPoint);
         });
