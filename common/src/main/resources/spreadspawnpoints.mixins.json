@@ -7,7 +7,9 @@
   ],
   "mixins": [
     "ServerPlayerEntityInvoker",
-    "ServerPlayerEntityMixin"
+    "ServerPlayerEntityMixin",
+    "Xoroshiro128PlusPlusRandomAccessor",
+    "Xoroshiro128PlusPlusRandomImplAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
