@@ -18,6 +18,7 @@ import xyz.verarr.spreadspawnpoints.mixin.ServerPlayerEntityInvoker;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.GridSpawnPointGenerator;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.RandomSpawnPointGenerator;
+import xyz.verarr.spreadspawnpoints.spawnpoints.generators.SpringSpawnPointGenerator;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.VanillaSpawnPointGenerator;
 
 import java.util.Collection;
@@ -50,6 +51,10 @@ public final class SpreadSpawnPoints {
         SpawnPointManager.registerSpawnPointGenerator(
                 Identifier.of(MOD_ID, "grid"),
                 GridSpawnPointGenerator.class
+        );
+        SpawnPointManager.registerSpawnPointGenerator(
+                Identifier.of(MOD_ID, "spring"),
+                SpringSpawnPointGenerator.class
         );
     }
 
