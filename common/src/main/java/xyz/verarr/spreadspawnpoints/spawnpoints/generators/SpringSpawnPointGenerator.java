@@ -10,6 +10,7 @@ import net.minecraft.world.border.WorldBorder;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import net.minecraft.util.Pair;
+import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
 import xyz.verarr.spreadspawnpoints.mixin.LocalRandomAccessor;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
@@ -98,8 +99,11 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
                             random.nextBetween(lowerX, upperX),
                             random.nextBetween(lowerZ, upperZ)
                     );
-            if (isValid(randomSpawnPoint))
+            if (isValid(randomSpawnPoint)) {
+                SpreadSpawnPoints.LOGGER.info("Spring spawnpoint generator " +
+                        "iterated over {} spawnpoints", i);
                 return randomSpawnPoint;
+            }
         }
         throw new RuntimeException("Spring spawnpoint generator couldn't " +
                 "generate new valid spawnpoint.");
