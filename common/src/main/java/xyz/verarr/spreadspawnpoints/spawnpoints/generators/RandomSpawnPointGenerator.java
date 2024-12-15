@@ -3,14 +3,12 @@ package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.math.random.RandomSeed;
-import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
 import net.minecraft.world.border.WorldBorder;
 import org.joml.Vector2i;
 import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
-import xyz.verarr.spreadspawnpoints.mixin.Xoroshiro128PlusPlusRandomAccessor;
-import xyz.verarr.spreadspawnpoints.mixin.Xoroshiro128PlusPlusRandomImplAccessor;
+import xyz.verarr.spreadspawnpoints.mixin.LocalRandomAccessor;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
 public class RandomSpawnPointGenerator implements SpawnPointGenerator {
@@ -22,7 +20,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
         Vector2i lowerBounds = new Vector2i((int) border.getBoundWest(), (int) border.getBoundNorth());
         Vector2i upperBounds = new Vector2i((int) border.getBoundEast(), (int) border.getBoundSouth());
         this.bounds = new Pair<>(lowerBounds, upperBounds);
-        this.random = new Xoroshiro128PlusPlusRandom(serverWorld.getSeed());
+        this.random = new LocalRandom(serverWorld.getSeed());
     }
 
     /**
@@ -83,15 +81,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
         nbt.putInt("upperX", bounds.getRight().x);
         nbt.putInt("lowerZ", bounds.getLeft().y);
         nbt.putInt("upperZ", bounds.getRight().y);
-        nbt.putLong("seedLo",
-                ((Xoroshiro128PlusPlusRandomImplAccessor)
-                        ((Xoroshiro128PlusPlusRandomAccessor) random).getImplementation())
-                        .getSeedLo());
-        nbt.putLong("seedHi",
-                ((Xoroshiro128PlusPlusRandomImplAccessor)
-                        ((Xoroshiro128PlusPlusRandomAccessor) random).getImplementation())
-                        .getSeedHi());
-        SpreadSpawnPoints.LOGGER.info("Wrote RSPG NBT");
+        nbt.putLong("seed", ((LocalRandomAccessor) random).getSeed());
         return nbt;
     }
     @Override
@@ -105,10 +95,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
                 tag.getInt("upperZ")
         );
         setBounds(new Pair<>(lowerBounds, upperBounds));
-        random = new Xoroshiro128PlusPlusRandom(new RandomSeed.XoroshiroSeed(
-                tag.getLong("seedLo"),
-                tag.getLong("seedHi")
-        ));
+        random = new LocalRandom(tag.getLong("seed"));
     }
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) {
@@ -124,10 +111,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
             upperBounds.y = tag.getInt("upperZ");
         setBounds(new Pair<>(lowerBounds, upperBounds));
 
-        if (tag.contains("seedLo", 4) && tag.contains("seedHi", 4))
-            random = new Xoroshiro128PlusPlusRandom(new RandomSeed.XoroshiroSeed(
-                    tag.getLong("seedLo"),
-                    tag.getLong("seedHi")
-            ));
+        if (tag.contains("seed", 4))
+            random.setSeed(tag.getLong("seed"));
     }
 }
