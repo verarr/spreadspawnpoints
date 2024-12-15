@@ -132,7 +132,8 @@ public class SpawnPointManager extends PersistentState {
                if (i > 1)
                    SpreadSpawnPoints.LOGGER.info("Iterated through {} " +
                         "spawnpoints before valid spawnpoint found", i);
-                return spawnPoint;
+               spawnPointGenerator.add(spawnPoint);
+               return spawnPoint;
             }
         }
     }
