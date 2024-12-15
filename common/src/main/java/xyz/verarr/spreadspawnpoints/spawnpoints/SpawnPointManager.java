@@ -123,11 +123,17 @@ public class SpawnPointManager extends PersistentState {
     }
 
     private Vector2i getNewSpawnpoint(ServerWorld world) {
+        int i = 0;
         while (true) {
+            i++;
             Vector2i spawnPoint = spawnPointGenerator.next();
             if (SpawnPointHelper.isValidSpawnPoint(world,
-                    new BlockPos(spawnPoint.x, 0, spawnPoint.y)))
+                    new BlockPos(spawnPoint.x, 0, spawnPoint.y))) {
+               if (i > 1)
+                   SpreadSpawnPoints.LOGGER.info("Iterated through {} " +
+                        "spawnpoints before valid spawnpoint found", i);
                 return spawnPoint;
+            }
         }
     }
 
