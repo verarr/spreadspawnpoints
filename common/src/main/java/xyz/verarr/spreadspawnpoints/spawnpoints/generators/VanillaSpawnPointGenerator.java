@@ -57,4 +57,6 @@ public class VanillaSpawnPointGenerator implements SpawnPointGenerator {
     }
     @Override
     public void modifyFromNbt(NbtCompound tag) {}
+    @Override
+    public void modifyFromNbtPartial(NbtCompound tag) {}
 }
