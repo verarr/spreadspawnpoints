@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.verarr.spreadspawnpoints.mixin.ServerPlayerEntityInvoker;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
+import xyz.verarr.spreadspawnpoints.spawnpoints.generators.GridSpawnPointGenerator;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.RandomSpawnPointGenerator;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.VanillaSpawnPointGenerator;
 
@@ -44,6 +45,10 @@ public final class SpreadSpawnPoints {
         SpawnPointManager.registerSpawnPointGenerator(
                 Identifier.of(MOD_ID, "random"),
                 RandomSpawnPointGenerator.class
+        );
+        SpawnPointManager.registerSpawnPointGenerator(
+                Identifier.of(MOD_ID, "grid"),
+                GridSpawnPointGenerator.class
         );
     }
 
