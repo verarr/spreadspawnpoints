@@ -1,6 +1,7 @@
 package xyz.verarr.spreadspawnpoints;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -108,11 +109,34 @@ public final class SpreadSpawnPoints {
                                                                         "Spawn point generator set to %s",
                                                                         identifier.toString()
                                                                 )), true);
+                                                                spawnPointManager.resetSpawnPoints();
                                                                 return Command.SINGLE_SUCCESS;
                                                             } catch (Exception e) {
                                                                 throw new SimpleCommandExceptionType(Text.literal(e.toString())).create();
                                                             }
                                                         })
+                                                        .then(argument(
+                                                                "resetSpawnPoints", BoolArgumentType.bool())
+                                                                .executes(context -> {
+                                                                    try {
+                                                                        final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
+                                                                        if (!SpawnPointManager.spawnPointGeneratorExists(identifier)) {
+                                                                            throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
+                                                                        }
+                                                                        final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
+                                                                        spawnPointManager.setSpawnPointGenerator(identifier);
+                                                                        context.getSource().sendFeedback(() -> Text.literal(String.format(
+                                                                                "Spawn point generator set to %s",
+                                                                                identifier.toString()
+                                                                        )), true);
+                                                                        if (BoolArgumentType.getBool(context, "resetSpawnPoints"))
+                                                                            spawnPointManager.resetSpawnPoints();
+                                                                        return Command.SINGLE_SUCCESS;
+                                                                    } catch (Exception e) {
+                                                                        throw new SimpleCommandExceptionType(Text.literal(e.toString())).create();
+                                                                    }
+                                                                })
+                                                        )
                                                 )
                                         )
                                         .then(literal("data")
