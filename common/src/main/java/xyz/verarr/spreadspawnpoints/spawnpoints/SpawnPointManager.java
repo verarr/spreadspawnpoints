@@ -153,6 +153,10 @@ public class SpawnPointManager extends PersistentState {
                 .getWorld(player.getWorld().getRegistryKey());
     }
 
+    public void updateGeneratorData(NbtCompound nbt) {
+        spawnPointGenerator.modifyFromNbtPartial(nbt);
+    }
+
     // PersistentState stuff
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
