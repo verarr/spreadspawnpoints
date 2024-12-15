@@ -1,6 +1,7 @@
 package xyz.verarr.spreadspawnpoints.spawnpoints;
 
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Contract;
 import org.spongepowered.include.com.google.common.collect.BiMap;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +16,7 @@ import xyz.verarr.spreadspawnpoints.spawnpoints.generators.VanillaSpawnPointGene
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class SpawnPointManager extends PersistentState {
@@ -120,6 +122,15 @@ public class SpawnPointManager extends PersistentState {
         playerSpawnPoints.clear();
     }
 
+    private Vector2i getNewSpawnpoint(ServerWorld world) {
+        while (true) {
+            Vector2i spawnPoint = spawnPointGenerator.next();
+            if (SpawnPointHelper.isValidSpawnPoint(world,
+                    new BlockPos(spawnPoint.x, 0, spawnPoint.y)))
+                return spawnPoint;
+        }
+    }
+
     /**
      * Gets the spawnpoint of a player, or generates a new one if it doesn't
      * exist yet.
@@ -127,10 +138,19 @@ public class SpawnPointManager extends PersistentState {
      * @return the spawnpoint of the player
      */
     public Vector2i getSpawnPoint(PlayerEntity player) {
-        return playerSpawnPoints.computeIfAbsent(
-                player.getUuid(),
-                uuid -> spawnPointGenerator.next()
-        );
+        try {
+            return (Vector2i) playerSpawnPoints.computeIfAbsent(
+                    player.getUuid(),
+                    uuid -> getNewSpawnpoint(getPlayerServerWorld(player))
+            ).clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ServerWorld getPlayerServerWorld(PlayerEntity player) {
+        return Objects.requireNonNull(player.getServer())
+                .getWorld(player.getWorld().getRegistryKey());
     }
 
     // PersistentState stuff
