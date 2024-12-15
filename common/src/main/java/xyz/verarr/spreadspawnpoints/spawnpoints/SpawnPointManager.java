@@ -198,6 +198,7 @@ public class SpawnPointManager extends PersistentState {
                     playerNbt.getInt("z")
             );
             spawnPointManager.playerSpawnPoints.put(uuid, spawnPoint);
+            spawnPointManager.spawnPointGenerator.add(spawnPoint);
         });
         spawnPointManager.spawnPointGenerator.modifyFromNbt(tag.getCompound("spawnPointGeneratorData"));
         return spawnPointManager;
