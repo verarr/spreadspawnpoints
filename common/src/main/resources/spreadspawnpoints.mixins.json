@@ -6,10 +6,9 @@
   "client": [
   ],
   "mixins": [
+    "LocalRandomAccessor",
     "ServerPlayerEntityInvoker",
-    "ServerPlayerEntityMixin",
-    "Xoroshiro128PlusPlusRandomAccessor",
-    "Xoroshiro128PlusPlusRandomImplAccessor"
+    "ServerPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
