@@ -109,6 +109,25 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
                 tag.getLong("seedLo"),
                 tag.getLong("seedHi")
         ));
-        SpreadSpawnPoints.LOGGER.info("Read RSPG NBT");
+    }
+    @Override
+    public void modifyFromNbtPartial(NbtCompound tag) {
+        Vector2i lowerBounds = bounds.getLeft();
+        Vector2i upperBounds = bounds.getRight();
+        if (tag.contains("lowerX", 3))
+            lowerBounds.x = tag.getInt("lowerX");
+        if (tag.contains("lowerZ", 3))
+            lowerBounds.y = tag.getInt("lowerZ");
+        if (tag.contains("upperX", 3))
+            upperBounds.x = tag.getInt("upper");
+        if (tag.contains("upperZ", 3))
+            upperBounds.y = tag.getInt("upperZ");
+        setBounds(new Pair<>(lowerBounds, upperBounds));
+
+        if (tag.contains("seedLo", 4) && tag.contains("seedHi", 4))
+            random = new Xoroshiro128PlusPlusRandom(new RandomSeed.XoroshiroSeed(
+                    tag.getLong("seedLo"),
+                    tag.getLong("seedHi")
+            ));
     }
 }

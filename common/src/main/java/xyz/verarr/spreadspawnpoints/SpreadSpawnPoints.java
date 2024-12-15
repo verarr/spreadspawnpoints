@@ -5,6 +5,8 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.NbtCompoundArgumentType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -105,6 +107,17 @@ public final class SpreadSpawnPoints {
                                                             } catch (Exception e) {
                                                                 throw new SimpleCommandExceptionType(Text.literal(e.toString())).create();
                                                             }
+                                                        })
+                                                )
+                                        )
+                                        .then(literal("data")
+                                                .then(argument("nbt",
+                                                        NbtCompoundArgumentType.nbtCompound())
+                                                        .executes(context -> {
+                                                            final NbtCompound nbt = NbtCompoundArgumentType.getNbtCompound(context, "nbt");
+                                                            final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
+                                                            spawnPointManager.updateGeneratorData(nbt);
+                                                            return Command.SINGLE_SUCCESS;
                                                         })
                                                 )
                                         )
