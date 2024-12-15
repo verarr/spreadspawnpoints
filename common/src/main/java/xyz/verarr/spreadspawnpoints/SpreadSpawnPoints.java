@@ -103,7 +103,8 @@ public final class SpreadSpawnPoints {
                                                                 if (!SpawnPointManager.spawnPointGeneratorExists(identifier)) {
                                                                     throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
                                                                 }
-                                                                final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
+                                                                final ServerWorld serverWorld = context.getSource().getWorld();
+                                                                final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(serverWorld);
                                                                 spawnPointManager.setSpawnPointGenerator(identifier);
                                                                 context.getSource().sendFeedback(() -> Text.literal(String.format(
                                                                         "Spawn point generator set to %s",

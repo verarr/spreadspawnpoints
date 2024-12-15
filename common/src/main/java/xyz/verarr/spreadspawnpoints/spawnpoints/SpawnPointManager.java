@@ -183,6 +183,7 @@ public class SpawnPointManager extends PersistentState {
     }
     public static SpawnPointManager createFromNbt(NbtCompound tag, ServerWorld world) {
         SpawnPointManager spawnPointManager = new SpawnPointManager();
+        spawnPointManager.serverWorld = world;
         spawnPointManager.spawnPointGenerator = constructSpawnPointGeneratorForWorld(
                 lookupSpawnPointGenerator(new Identifier(tag.getString("spawnPointGenerator"))),
                 world
