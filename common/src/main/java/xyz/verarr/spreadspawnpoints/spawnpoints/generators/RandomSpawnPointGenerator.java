@@ -11,8 +11,8 @@ import xyz.verarr.spreadspawnpoints.mixin.LocalRandomAccessor;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
 public class RandomSpawnPointGenerator implements SpawnPointGenerator {
-    private Pair<Vector2i, Vector2i> bounds;
-    private Random random;
+    private final Pair<Vector2i, Vector2i> bounds;
+    private final Random random;
 
     public RandomSpawnPointGenerator(ServerWorld serverWorld) {
         WorldBorder border = serverWorld.getWorldBorder();
@@ -28,7 +28,8 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
      * @param bounds lower bound followed by upper bound.
      */
     public void setBounds(Pair<Vector2i, Vector2i> bounds) {
-        this.bounds = bounds;
+        this.bounds.setLeft(bounds.getLeft());
+        this.bounds.setRight(bounds.getRight());
     }
 
     /**
@@ -95,7 +96,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
                 tag.getInt("upperZ")
         );
         setBounds(new Pair<>(lowerBounds, upperBounds));
-        random = new LocalRandom(tag.getLong("seed"));
+        random.setSeed(tag.getLong("seed"));
     }
 
     @Override

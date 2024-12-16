@@ -34,15 +34,18 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
             new Vector2i(+1, +1)
     );
 
-    private final Map<Vector2i, Set<Vector2i>> grid;
+    // settings
     private final Vector2i worldSpawn;
-    private int greatestDistanceFromWorldspawn = 0;
-    private Pair<Vector2i, Vector2i> bounds;
-    private Random random;
+    private final Pair<Vector2i, Vector2i> bounds;
     private int reserveRadius = DEFAULT_RESERVE_RADIUS;
     private int overlapRadius = DEFAULT_OVERLAP_RADIUS;
     private int worldspawnReserveRadius = DEFAULT_WORLDSPAWN_RESERVE_RADIUS;
     private int worldspawnOverlapRadius = DEFAULT_WORLDSPAWN_OVERLAP_RADIUS;
+
+    // state
+    private final Random random;
+    private final Map<Vector2i, Set<Vector2i>> grid = new HashMap<>();
+    private int greatestDistanceFromWorldspawn = 0;
 
     public SpringSpawnPointGenerator(ServerWorld serverWorld) {
         WorldBorder border = serverWorld.getWorldBorder();
@@ -50,7 +53,6 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
         Vector2i upperBounds = new Vector2i((int) border.getBoundEast(), (int) border.getBoundSouth());
         this.bounds = new Pair<>(lowerBounds, upperBounds);
         this.random = new LocalRandom(serverWorld.getSeed());
-        this.grid = new HashMap<>();
 
         BlockPos worldSpawn = serverWorld.getSpawnPos();
         this.worldSpawn = new Vector2i(
@@ -64,7 +66,8 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
      * @param bounds lower bound followed by upper bound.
      */
     public void setBounds(Pair<Vector2i, Vector2i> bounds) {
-        this.bounds = bounds;
+        this.bounds.setLeft(bounds.getLeft());
+        this.bounds.setRight(bounds.getRight());
     }
 
     /**
@@ -243,7 +246,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
         );
         setBounds(new Pair<>(lowerBounds, upperBounds));
 
-        random = new LocalRandom(tag.getLong("seed"));
+        random.setSeed(tag.getLong("seed"));
 
         reserveRadius = tag.getInt("reserveRadius");
         overlapRadius = tag.getInt("overlapRadius");
