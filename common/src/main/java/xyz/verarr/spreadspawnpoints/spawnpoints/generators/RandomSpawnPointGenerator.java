@@ -1,5 +1,6 @@
 package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
@@ -11,25 +12,15 @@ import xyz.verarr.spreadspawnpoints.mixin.LocalRandomAccessor;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
 public class RandomSpawnPointGenerator implements SpawnPointGenerator {
-    private final Pair<Vector2i, Vector2i> bounds;
+    private final Vector2i lowerBounds;
+    private final Vector2i upperBounds;
     private final Random random;
 
     public RandomSpawnPointGenerator(ServerWorld serverWorld) {
         WorldBorder border = serverWorld.getWorldBorder();
-        Vector2i lowerBounds = new Vector2i((int) border.getBoundWest(), (int) border.getBoundNorth());
-        Vector2i upperBounds = new Vector2i((int) border.getBoundEast(), (int) border.getBoundSouth());
-        this.bounds = new Pair<>(lowerBounds, upperBounds);
+        this.lowerBounds = new Vector2i((int) border.getBoundWest(), (int) border.getBoundNorth());
+        this.upperBounds = new Vector2i((int) border.getBoundEast(), (int) border.getBoundSouth());
         this.random = new LocalRandom(serverWorld.getSeed());
-    }
-
-    /**
-     * Set the bounds in which the spawnpoints will be generated.
-     *
-     * @param bounds lower bound followed by upper bound.
-     */
-    public void setBounds(Pair<Vector2i, Vector2i> bounds) {
-        this.bounds.setLeft(bounds.getLeft());
-        this.bounds.setRight(bounds.getRight());
     }
 
     /**
@@ -40,8 +31,8 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
     @Override
     public Vector2i next() {
         return new Vector2i(
-                random.nextBetween(bounds.getLeft().x, bounds.getRight().x),
-                random.nextBetween(bounds.getLeft().y, bounds.getRight().y)
+                random.nextBetween(lowerBounds.x, upperBounds.x),
+                random.nextBetween(lowerBounds.y, upperBounds.y)
         );
     }
 
@@ -54,10 +45,10 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
     @Override
     public boolean isValid(Vector2i spawnPoint) {
         return (
-                bounds.getLeft().x <= spawnPoint.x &&
-                        bounds.getRight().x >= spawnPoint.x &&
-                        bounds.getLeft().y <= spawnPoint.y &&
-                        bounds.getRight().y >= spawnPoint.y
+                lowerBounds.x <= spawnPoint.x &&
+                        upperBounds.x >= spawnPoint.x &&
+                        lowerBounds.y <= spawnPoint.y &&
+                        upperBounds.y >= spawnPoint.y
         );
     }
 
@@ -77,32 +68,26 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
     @Override
     public NbtCompound writeNbt() {
         NbtCompound nbt = new NbtCompound();
-        nbt.putInt("lowerX", bounds.getLeft().x);
-        nbt.putInt("upperX", bounds.getRight().x);
-        nbt.putInt("lowerZ", bounds.getLeft().y);
-        nbt.putInt("upperZ", bounds.getRight().y);
+        nbt.putInt("lowerX", lowerBounds.x);
+        nbt.putInt("upperX", upperBounds.x);
+        nbt.putInt("lowerZ", lowerBounds.y);
+        nbt.putInt("upperZ", upperBounds.y);
         nbt.putLong("seed", ((LocalRandomAccessor) random).getSeed());
         return nbt;
     }
 
     @Override
     public void modifyFromNbt(NbtCompound tag) {
-        Vector2i lowerBounds = new Vector2i(
-                tag.getInt("lowerX"),
-                tag.getInt("lowerZ")
-        );
-        Vector2i upperBounds = new Vector2i(
-                tag.getInt("upperX"),
-                tag.getInt("upperZ")
-        );
-        setBounds(new Pair<>(lowerBounds, upperBounds));
+        lowerBounds.x = tag.getInt("lowerX");
+        lowerBounds.y = tag.getInt("lowerZ");
+        upperBounds.x = tag.getInt("upperX");
+        upperBounds.y = tag.getInt("upperZ");
+
         random.setSeed(tag.getLong("seed"));
     }
 
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) {
-        Vector2i lowerBounds = bounds.getLeft();
-        Vector2i upperBounds = bounds.getRight();
         if (tag.contains("lowerX", 3))
             lowerBounds.x = tag.getInt("lowerX");
         if (tag.contains("lowerZ", 3))
@@ -111,7 +96,6 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
             upperBounds.x = tag.getInt("upper");
         if (tag.contains("upperZ", 3))
             upperBounds.y = tag.getInt("upperZ");
-        setBounds(new Pair<>(lowerBounds, upperBounds));
 
         if (tag.contains("seed", 4))
             random.setSeed(tag.getLong("seed"));

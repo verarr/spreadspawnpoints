@@ -2,7 +2,6 @@ package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
@@ -36,7 +35,8 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     // settings
     private final Vector2i worldSpawn;
-    private final Pair<Vector2i, Vector2i> bounds;
+    private final Vector2i lowerBounds;
+    private final Vector2i upperBounds;
     private int reserveRadius = DEFAULT_RESERVE_RADIUS;
     private int overlapRadius = DEFAULT_OVERLAP_RADIUS;
     private int worldspawnReserveRadius = DEFAULT_WORLDSPAWN_RESERVE_RADIUS;
@@ -49,25 +49,14 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     public SpringSpawnPointGenerator(ServerWorld serverWorld) {
         WorldBorder border = serverWorld.getWorldBorder();
-        Vector2i lowerBounds = new Vector2i((int) border.getBoundWest(), (int) border.getBoundNorth());
-        Vector2i upperBounds = new Vector2i((int) border.getBoundEast(), (int) border.getBoundSouth());
-        this.bounds = new Pair<>(lowerBounds, upperBounds);
+        this.lowerBounds = new Vector2i((int) border.getBoundWest(), (int) border.getBoundNorth());
+        this.upperBounds = new Vector2i((int) border.getBoundEast(), (int) border.getBoundSouth());
         this.random = new LocalRandom(serverWorld.getSeed());
 
         BlockPos worldSpawn = serverWorld.getSpawnPos();
         this.worldSpawn = new Vector2i(
                 worldSpawn.getX(), worldSpawn.getZ()
         );
-    }
-
-    /**
-     * Set the bounds in which the spawnpoints will be generated.
-     *
-     * @param bounds lower bound followed by upper bound.
-     */
-    public void setBounds(Pair<Vector2i, Vector2i> bounds) {
-        this.bounds.setLeft(bounds.getLeft());
-        this.bounds.setRight(bounds.getRight());
     }
 
     /**
@@ -79,19 +68,19 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
     public Vector2i next() {
         int lowerX = MathHelper.clamp(
                 -greatestDistanceFromWorldspawn - overlapRadius,
-                bounds.getLeft().x, worldSpawn.x - worldspawnOverlapRadius
+                lowerBounds.x, worldSpawn.x - worldspawnOverlapRadius
         );
         int lowerZ = MathHelper.clamp(
                 -greatestDistanceFromWorldspawn - overlapRadius,
-                bounds.getLeft().y, worldSpawn.y - worldspawnOverlapRadius
+                lowerBounds.y, worldSpawn.y - worldspawnOverlapRadius
         );
         int upperX = MathHelper.clamp(
                 greatestDistanceFromWorldspawn + overlapRadius,
-                worldSpawn.x + worldspawnOverlapRadius, bounds.getRight().x
+                worldSpawn.x + worldspawnOverlapRadius, upperBounds.x
         );
         int upperZ = MathHelper.clamp(
                 greatestDistanceFromWorldspawn + overlapRadius,
-                worldSpawn.y + worldspawnOverlapRadius, bounds.getRight().y
+                worldSpawn.y + worldspawnOverlapRadius, upperBounds.y
         );
 
         int i = 0;
@@ -141,10 +130,10 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
      */
     @Override
     public boolean isValid(Vector2i spawnPoint) {
-        if (!(bounds.getLeft().x <= spawnPoint.x &&
-                bounds.getRight().x >= spawnPoint.x &&
-                bounds.getLeft().y <= spawnPoint.y &&
-                bounds.getRight().y >= spawnPoint.y))
+        if (!(lowerBounds.x <= spawnPoint.x &&
+                upperBounds.x >= spawnPoint.x &&
+                lowerBounds.y <= spawnPoint.y &&
+                upperBounds.y >= spawnPoint.y))
             return false;
 
         int overlaps = 0;
@@ -216,10 +205,10 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
     @Override
     public NbtCompound writeNbt() {
         NbtCompound nbt = new NbtCompound();
-        nbt.putInt("lowerX", bounds.getLeft().x);
-        nbt.putInt("upperX", bounds.getRight().x);
-        nbt.putInt("lowerZ", bounds.getLeft().y);
-        nbt.putInt("upperZ", bounds.getRight().y);
+        nbt.putInt("lowerX", lowerBounds.x);
+        nbt.putInt("upperX", upperBounds.x);
+        nbt.putInt("lowerZ", lowerBounds.y);
+        nbt.putInt("upperZ", upperBounds.y);
 
         nbt.putLong("seed", ((LocalRandomAccessor) random).getSeed());
 
@@ -236,15 +225,10 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     @Override
     public void modifyFromNbt(NbtCompound tag) {
-        Vector2i lowerBounds = new Vector2i(
-                tag.getInt("lowerX"),
-                tag.getInt("lowerZ")
-        );
-        Vector2i upperBounds = new Vector2i(
-                tag.getInt("upperX"),
-                tag.getInt("upperZ")
-        );
-        setBounds(new Pair<>(lowerBounds, upperBounds));
+        lowerBounds.x = tag.getInt("lowerX");
+        lowerBounds.y = tag.getInt("lowerZ");
+        upperBounds.x = tag.getInt("upperX");
+        upperBounds.y = tag.getInt("upperZ");
 
         random.setSeed(tag.getLong("seed"));
 
@@ -259,8 +243,6 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) {
-        Vector2i lowerBounds = bounds.getLeft();
-        Vector2i upperBounds = bounds.getRight();
         if (tag.contains("lowerX", 3))
             lowerBounds.x = tag.getInt("lowerX");
         if (tag.contains("lowerZ", 3))
@@ -269,7 +251,6 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
             upperBounds.x = tag.getInt("upper");
         if (tag.contains("upperZ", 3))
             upperBounds.y = tag.getInt("upperZ");
-        setBounds(new Pair<>(lowerBounds, upperBounds));
 
         if (tag.contains("seed", 4))
             random.setSeed(tag.getLong("seed"));
