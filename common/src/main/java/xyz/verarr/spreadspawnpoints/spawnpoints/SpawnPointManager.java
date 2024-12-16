@@ -1,14 +1,13 @@
 package xyz.verarr.spreadspawnpoints.spawnpoints;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Contract;
-import org.spongepowered.include.com.google.common.collect.BiMap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
 import org.joml.Vector2i;
+import org.spongepowered.include.com.google.common.collect.BiMap;
 import org.spongepowered.include.com.google.common.collect.HashBiMap;
 import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.VanillaSpawnPointGenerator;
@@ -29,7 +28,7 @@ public class SpawnPointManager extends PersistentState {
      * any spawnpoint generator implementations you wish to use.
      *
      * @param identifier the desired identifier for the generator
-     * @param generator the generator's class
+     * @param generator  the generator's class
      */
     public static void registerSpawnPointGenerator(Identifier identifier, Class<? extends SpawnPointGenerator> generator) {
         registeredSpawnPointGenerators.put(identifier, generator);
@@ -70,7 +69,7 @@ public class SpawnPointManager extends PersistentState {
      * specified world.
      *
      * @param generatorType type of the generator to construct
-     * @param world server world to use in the constructor
+     * @param world         server world to use in the constructor
      * @return the newly constructed spawnpoint generator
      */
     private static SpawnPointGenerator constructSpawnPointGeneratorForWorld(Class<? extends SpawnPointGenerator> generatorType, ServerWorld world) {
@@ -79,7 +78,8 @@ public class SpawnPointManager extends PersistentState {
             generator = generatorType.getConstructor(ServerWorld.class).newInstance(world);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("SpawnPointGenerator must have a constructor with a ServerWorld parameter", e);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
             throw new RuntimeException("Failed to instantiate SpawnPointGenerator: " + e, e);
         }
         return generator;
@@ -91,6 +91,7 @@ public class SpawnPointManager extends PersistentState {
     private SpawnPointGenerator spawnPointGenerator;
 
     private SpawnPointManager() {}
+
     private SpawnPointManager(ServerWorld world) {
         this.spawnPointGenerator = constructSpawnPointGeneratorForWorld(DEFAULT_SPAWNPOINT_GENERATOR, world);
         this.serverWorld = world;
@@ -129,11 +130,11 @@ public class SpawnPointManager extends PersistentState {
             Vector2i spawnPoint = spawnPointGenerator.next();
             if (SpawnPointHelper.isValidSpawnPoint(world,
                     new BlockPos(spawnPoint.x, 0, spawnPoint.y))) {
-               if (i > 1)
-                   SpreadSpawnPoints.LOGGER.info("Iterated through {} " +
-                        "spawnpoints before valid spawnpoint found", i);
-               spawnPointGenerator.add(spawnPoint);
-               return spawnPoint;
+                if (i > 1)
+                    SpreadSpawnPoints.LOGGER.info("Iterated through {} " +
+                            "spawnpoints before valid spawnpoint found", i);
+                spawnPointGenerator.add(spawnPoint);
+                return spawnPoint;
             }
         }
     }
@@ -141,6 +142,7 @@ public class SpawnPointManager extends PersistentState {
     /**
      * Gets the spawnpoint of a player, or generates a new one if it doesn't
      * exist yet.
+     *
      * @param player the player to get the spawnpoint for.
      * @return the spawnpoint of the player
      */
@@ -182,6 +184,7 @@ public class SpawnPointManager extends PersistentState {
 
         return nbt;
     }
+
     public static SpawnPointManager createFromNbt(NbtCompound tag, ServerWorld world) {
         SpawnPointManager spawnPointManager = new SpawnPointManager();
         spawnPointManager.serverWorld = world;
@@ -203,6 +206,7 @@ public class SpawnPointManager extends PersistentState {
         spawnPointManager.spawnPointGenerator.modifyFromNbt(tag.getCompound("spawnPointGeneratorData"));
         return spawnPointManager;
     }
+
     public static SpawnPointManager getInstance(ServerWorld world) {
         SpawnPointManager spawnPointManager = world.getPersistentStateManager().getOrCreate(
                 tag -> createFromNbt(tag, world),
