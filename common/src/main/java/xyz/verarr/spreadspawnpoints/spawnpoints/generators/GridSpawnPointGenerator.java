@@ -7,6 +7,7 @@ import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
 public class GridSpawnPointGenerator implements SpawnPointGenerator {
     public Vector2i gridSize;
+    public Vector2i offset;
 
     private int currentX;
     private int currentY;
@@ -21,6 +22,10 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
         this.stepsInCurrentLayer = 1;
         this.stepsInCurrentDirection = 0;
         this.gridSize = new Vector2i(16, 16);
+        this.offset = new Vector2i(
+                serverWorld.getSpawnPos().getX(),
+                serverWorld.getSpawnPos().getZ()
+        );
     }
 
     /**
@@ -30,7 +35,9 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
      */
     @Override
     public Vector2i next() {
-        Vector2i vector = new Vector2i(currentX, currentY).mul(gridSize);
+        Vector2i vector = new Vector2i(currentX, currentY)
+                .mul(gridSize)
+                .add(offset);
         moveToNext();
         return vector;
     }
@@ -73,8 +80,8 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
     @Override
     public boolean isValid(Vector2i spawnPoint) {
         return (
-                spawnPoint.x % gridSize.x == 0 &&
-                        spawnPoint.y % gridSize.y == 0
+                (spawnPoint.x - offset.x) % gridSize.x == 0 &&
+                        (spawnPoint.y - offset.y) % gridSize.y == 0
         );
     }
 
