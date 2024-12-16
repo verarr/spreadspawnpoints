@@ -157,6 +157,18 @@ public class SpawnPointManager extends PersistentState {
         }
     }
 
+    /**
+     * Resets the spawnpoint of a player.
+     *
+     * @param player the player to reset the spawnpoint of.
+     * @return <code>true</code> if there was a spawnpoint associated with
+     * <code>player</code>, otherwise <code>false</code>.
+     * @see #resetSpawnPoints()
+     */
+    public boolean resetSpawnPoint(PlayerEntity player) {
+        return Objects.nonNull(playerSpawnPoints.remove(player.getUuid()));
+    }
+
     private static ServerWorld getPlayerServerWorld(PlayerEntity player) {
         return Objects.requireNonNull(player.getServer())
                 .getWorld(player.getWorld().getRegistryKey());
