@@ -168,8 +168,32 @@ public class SpawnpointsCommand {
             return Command.SINGLE_SUCCESS;
         }
 
+        private static int executeWithArgument(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+            final ServerWorld world = context.getSource().getWorld();
+            final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
+            final Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
+            int affected = (int) players.stream().filter(spawnPointManager::resetSpawnPoint).count();
+            if (affected > 0) {
+                context.getSource().sendFeedback(() ->
+                        Text.literal("Reset %d spawn points.".formatted(affected)),
+                        true);
+                return affected;
+            } else {
+                throw new SimpleCommandExceptionType(
+                        Text.literal("No specified player already has a " +
+                                "spawnpoint, nothing was affected.")).create();
+            }
+        }
+
+        private static final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> argumentBuilder = argument(
+                "target",
+                EntityArgumentType.players()
+        ).executes(ResetCommand::executeWithArgument);
+
         public static LiteralArgumentBuilder<ServerCommandSource> command =
-                literal("reset").executes(ResetCommand::execute);
+                literal("reset")
+                        .executes(ResetCommand::execute)
+                        .then(argumentBuilder);
     }
 
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
