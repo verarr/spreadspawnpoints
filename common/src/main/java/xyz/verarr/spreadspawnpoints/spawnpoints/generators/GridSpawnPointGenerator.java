@@ -2,7 +2,6 @@ package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import org.apache.commons.lang3.NotImplementedException;
 import org.joml.Vector2i;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
@@ -80,28 +79,16 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
     }
 
     /**
-     * Internal method to add a spawnpoint to the generator. Only use this if necessary.
-     * <p>
-     * Implementations may ignore this method.
-     *
-     * @param spawnPoint spawnpoint to add
+     * This method is ignored.
      */
     @Override
-    public void add(Vector2i spawnPoint) {
-        throw new NotImplementedException();
-    }
+    public void add(Vector2i spawnPoint) {}
 
     /**
-     * Internal method to remove a spawnpoint from the generator. Only use this if necessary.
-     * <p>
-     * Implementations may ignore this method.
-     *
-     * @param spawnPoint spawnpoint to remove
+     * This method is ignored.
      */
     @Override
-    public void remove(Vector2i spawnPoint) {
-        throw new NotImplementedException();
-    }
+    public void remove(Vector2i spawnPoint) {}
 
     @Override
     public NbtCompound writeNbt() {
