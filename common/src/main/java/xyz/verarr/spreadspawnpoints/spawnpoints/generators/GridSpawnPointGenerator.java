@@ -88,8 +88,6 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
      */
     @Override
     public void add(Vector2i spawnPoint) {
-        if (!isValid(spawnPoint))
-            throw new IllegalArgumentException("Invalid spawnpoint given");
         throw new NotImplementedException();
     }
 
