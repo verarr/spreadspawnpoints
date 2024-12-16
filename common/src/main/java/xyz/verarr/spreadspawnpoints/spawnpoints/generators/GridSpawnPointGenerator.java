@@ -73,7 +73,10 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
      */
     @Override
     public boolean isValid(Vector2i spawnPoint) {
-        throw new NotImplementedException();
+        return (
+                spawnPoint.x % gridSize.x == 0 &&
+                        spawnPoint.y % gridSize.y == 0
+        );
     }
 
     /**
