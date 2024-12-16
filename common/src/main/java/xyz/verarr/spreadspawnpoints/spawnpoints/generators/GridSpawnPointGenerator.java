@@ -6,23 +6,17 @@ import org.joml.Vector2i;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
 public class GridSpawnPointGenerator implements SpawnPointGenerator {
-    public Vector2i gridSize;
-    public Vector2i offset;
+    public final Vector2i gridSize = new Vector2i(16);
+    public final Vector2i offset = new Vector2i(0);
 
-    private int currentX;
-    private int currentY;
-    private int direction; // 0: right, 1: down, 2: left, 3: up
-    private int stepsInCurrentDirection;
-    private int stepsInCurrentLayer;
+    private int currentX = 0;
+    private int currentY = 0;
+    private int direction = 0; // 0: right, 1: down, 2: left, 3: up
+    private int stepsInCurrentDirection = 0;
+    private int stepsInCurrentLayer = 1;
 
     public GridSpawnPointGenerator(ServerWorld serverWorld) {
-        this.currentX = 0;
-        this.currentY = 0;
-        this.direction = 0;
-        this.stepsInCurrentLayer = 1;
-        this.stepsInCurrentDirection = 0;
-        this.gridSize = new Vector2i(16, 16);
-        this.offset = new Vector2i(
+        this.offset.set(
                 serverWorld.getSpawnPos().getX(),
                 serverWorld.getSpawnPos().getZ()
         );
