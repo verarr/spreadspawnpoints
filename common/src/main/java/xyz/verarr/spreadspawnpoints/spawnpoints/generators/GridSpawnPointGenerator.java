@@ -102,6 +102,8 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
         NbtCompound nbt = new NbtCompound();
         nbt.putInt("gridX", gridSize.x);
         nbt.putInt("gridZ", gridSize.y);
+        nbt.putInt("offsetX", offset.x);
+        nbt.putInt("offsetZ", offset.y);
 
         NbtCompound state = new NbtCompound();
         state.putInt("currentX", currentX);
@@ -117,6 +119,8 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
     public void modifyFromNbt(NbtCompound tag) {
         gridSize.x = tag.getInt("gridX");
         gridSize.y = tag.getInt("gridZ");
+        offset.x = tag.getInt("offsetX");
+        offset.y = tag.getInt("offsetZ");
 
         NbtCompound state = tag.getCompound("state");
         currentX = state.getInt("currentX");
@@ -131,5 +135,9 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
             gridSize.x = tag.getInt("gridX");
         if (tag.contains("gridZ", 3))
             gridSize.y = tag.getInt("gridZ");
+        if (tag.contains("offsetX", 3))
+            offset.x = tag.getInt("offsetX");
+        if (tag.contains("offsetZ", 3))
+            offset.y = tag.getInt("offsetZ");
     }
 }
