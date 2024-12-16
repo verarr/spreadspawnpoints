@@ -180,7 +180,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     /**
      * Internal method to add a spawnpoint to the generator. Only use this if necessary.
-     * <p>
+     *
      * Implementations may ignore this method.
      *
      * @param spawnPoint spawnpoint to add
@@ -195,7 +195,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     /**
      * Internal method to remove a spawnpoint from the generator. Only use this if necessary.
-     * <p>
+     *
      * Implementations may ignore this method.
      *
      * @param spawnPoint spawnpoint to remove
