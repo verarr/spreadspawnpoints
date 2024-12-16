@@ -61,112 +61,112 @@ public final class SpreadSpawnPoints {
     static void initCommands() {
         CommandRegistrationEvent.EVENT.register(
                 (dispatcher, registryAccess, environment) ->
-                dispatcher.register(
-                        literal("spawnpoints")
-                                .then(literal("respawn")
-                                        .then(argument("target", EntityArgumentType.players())
-                                                .executes(context -> {
-                                                    final Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
-                                                    players.forEach(player -> {
-                                                        ((ServerPlayerEntityInvoker) player).invokeMoveToSpawn(player.getServerWorld());
-                                                        player.teleport(
-                                                                player.getServerWorld(),
-                                                                player.getX(),
-                                                                player.getY(),
-                                                                player.getZ(),
-                                                                player.getYaw(),
-                                                                player.getPitch()
-                                                        );
-                                                    });
-                                                    context.getSource().sendFeedback(
-                                                            () -> Text.literal(String.format("Respawned %d players", players.size())),
-                                                            true
-                                                    );
-                                                    return 1;
-                                                }))
-                                )
-                                .then(literal("generator")
-                                        .then(literal("query")
-                                                .executes(context -> {
-                                                    final ServerWorld world = context.getSource().getWorld();
-                                                    final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
-                                                    context.getSource().sendFeedback(
-                                                            () -> Text.literal(String.format(
-                                                                    "The spawn point generator is %s",
-                                                                    spawnPointManager.getSpawnPointGenerator().toString()
-                                                                    )),
-                                                            false
-                                                    );
-                                                    return Command.SINGLE_SUCCESS;
-                                                })
-                                        )
-                                        .then(literal("set")
-                                                .then(argument("generator", IdentifierArgumentType.identifier())
+                        dispatcher.register(
+                                literal("spawnpoints")
+                                        .then(literal("respawn")
+                                                .then(argument("target", EntityArgumentType.players())
                                                         .executes(context -> {
-                                                            try {
-                                                                final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
-                                                                if (!SpawnPointManager.spawnPointGeneratorExists(identifier)) {
-                                                                    throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
-                                                                }
-                                                                final ServerWorld serverWorld = context.getSource().getWorld();
-                                                                final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(serverWorld);
-                                                                spawnPointManager.setSpawnPointGenerator(identifier);
-                                                                context.getSource().sendFeedback(() -> Text.literal(String.format(
-                                                                        "Spawn point generator set to %s",
-                                                                        identifier.toString()
-                                                                )), true);
-                                                                spawnPointManager.resetSpawnPoints();
-                                                                return Command.SINGLE_SUCCESS;
-                                                            } catch (Exception e) {
-                                                                throw new SimpleCommandExceptionType(Text.literal(e.toString())).create();
-                                                            }
+                                                            final Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
+                                                            players.forEach(player -> {
+                                                                ((ServerPlayerEntityInvoker) player).invokeMoveToSpawn(player.getServerWorld());
+                                                                player.teleport(
+                                                                        player.getServerWorld(),
+                                                                        player.getX(),
+                                                                        player.getY(),
+                                                                        player.getZ(),
+                                                                        player.getYaw(),
+                                                                        player.getPitch()
+                                                                );
+                                                            });
+                                                            context.getSource().sendFeedback(
+                                                                    () -> Text.literal(String.format("Respawned %d players", players.size())),
+                                                                    true
+                                                            );
+                                                            return 1;
+                                                        }))
+                                        )
+                                        .then(literal("generator")
+                                                .then(literal("query")
+                                                        .executes(context -> {
+                                                            final ServerWorld world = context.getSource().getWorld();
+                                                            final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
+                                                            context.getSource().sendFeedback(
+                                                                    () -> Text.literal(String.format(
+                                                                            "The spawn point generator is %s",
+                                                                            spawnPointManager.getSpawnPointGenerator().toString()
+                                                                    )),
+                                                                    false
+                                                            );
+                                                            return Command.SINGLE_SUCCESS;
                                                         })
-                                                        .then(argument(
-                                                                "resetSpawnPoints", BoolArgumentType.bool())
+                                                )
+                                                .then(literal("set")
+                                                        .then(argument("generator", IdentifierArgumentType.identifier())
                                                                 .executes(context -> {
                                                                     try {
                                                                         final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
                                                                         if (!SpawnPointManager.spawnPointGeneratorExists(identifier)) {
                                                                             throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
                                                                         }
-                                                                        final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
+                                                                        final ServerWorld serverWorld = context.getSource().getWorld();
+                                                                        final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(serverWorld);
                                                                         spawnPointManager.setSpawnPointGenerator(identifier);
                                                                         context.getSource().sendFeedback(() -> Text.literal(String.format(
                                                                                 "Spawn point generator set to %s",
                                                                                 identifier.toString()
                                                                         )), true);
-                                                                        if (BoolArgumentType.getBool(context, "resetSpawnPoints"))
-                                                                            spawnPointManager.resetSpawnPoints();
+                                                                        spawnPointManager.resetSpawnPoints();
                                                                         return Command.SINGLE_SUCCESS;
                                                                     } catch (Exception e) {
                                                                         throw new SimpleCommandExceptionType(Text.literal(e.toString())).create();
                                                                     }
                                                                 })
+                                                                .then(argument(
+                                                                        "resetSpawnPoints", BoolArgumentType.bool())
+                                                                        .executes(context -> {
+                                                                            try {
+                                                                                final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
+                                                                                if (!SpawnPointManager.spawnPointGeneratorExists(identifier)) {
+                                                                                    throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
+                                                                                }
+                                                                                final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
+                                                                                spawnPointManager.setSpawnPointGenerator(identifier);
+                                                                                context.getSource().sendFeedback(() -> Text.literal(String.format(
+                                                                                        "Spawn point generator set to %s",
+                                                                                        identifier.toString()
+                                                                                )), true);
+                                                                                if (BoolArgumentType.getBool(context, "resetSpawnPoints"))
+                                                                                    spawnPointManager.resetSpawnPoints();
+                                                                                return Command.SINGLE_SUCCESS;
+                                                                            } catch (Exception e) {
+                                                                                throw new SimpleCommandExceptionType(Text.literal(e.toString())).create();
+                                                                            }
+                                                                        })
+                                                                )
+                                                        )
+                                                )
+                                                .then(literal("data")
+                                                        .then(argument("nbt",
+                                                                NbtCompoundArgumentType.nbtCompound())
+                                                                .executes(context -> {
+                                                                    final NbtCompound nbt = NbtCompoundArgumentType.getNbtCompound(context, "nbt");
+                                                                    final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
+                                                                    spawnPointManager.updateGeneratorData(nbt);
+                                                                    return Command.SINGLE_SUCCESS;
+                                                                })
                                                         )
                                                 )
                                         )
-                                        .then(literal("data")
-                                                .then(argument("nbt",
-                                                        NbtCompoundArgumentType.nbtCompound())
-                                                        .executes(context -> {
-                                                            final NbtCompound nbt = NbtCompoundArgumentType.getNbtCompound(context, "nbt");
-                                                            final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
-                                                            spawnPointManager.updateGeneratorData(nbt);
-                                                            return Command.SINGLE_SUCCESS;
-                                                        })
-                                                )
+                                        .then(literal("reset")
+                                                .executes(context -> {
+                                                    final ServerWorld world = context.getSource().getWorld();
+                                                    final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
+                                                    spawnPointManager.resetSpawnPoints();
+                                                    context.getSource().sendFeedback(() -> Text.literal("Reset all spawn points."), true);
+                                                    return Command.SINGLE_SUCCESS;
+                                                })
                                         )
-                                )
-                                .then(literal("reset")
-                                        .executes(context -> {
-                                            final ServerWorld world = context.getSource().getWorld();
-                                            final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
-                                            spawnPointManager.resetSpawnPoints();
-                                            context.getSource().sendFeedback(() -> Text.literal("Reset all spawn points."), true);
-                                            return Command.SINGLE_SUCCESS;
-                                        })
-                                )
-                )
-                );
+                        )
+        );
     }
 }

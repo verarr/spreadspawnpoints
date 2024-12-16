@@ -36,7 +36,7 @@ public class VanillaSpawnPointGenerator implements SpawnPointGenerator {
         return (
                 spawnPoint.x == world.getLevelProperties().getSpawnX() &&
                         spawnPoint.y == world.getLevelProperties().getSpawnZ()
-                );
+        );
     }
 
     /**
@@ -44,6 +44,7 @@ public class VanillaSpawnPointGenerator implements SpawnPointGenerator {
      */
     @Override
     public void add(Vector2i spawnPoint) {}
+
     /**
      * This method is ignored.
      */
@@ -55,8 +56,10 @@ public class VanillaSpawnPointGenerator implements SpawnPointGenerator {
     public NbtCompound writeNbt() {
         return new NbtCompound();
     }
+
     @Override
     public void modifyFromNbt(NbtCompound tag) {}
+
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) {}
 }

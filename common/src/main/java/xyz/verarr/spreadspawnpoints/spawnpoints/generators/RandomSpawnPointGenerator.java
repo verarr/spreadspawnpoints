@@ -7,7 +7,6 @@ import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.border.WorldBorder;
 import org.joml.Vector2i;
-import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
 import xyz.verarr.spreadspawnpoints.mixin.LocalRandomAccessor;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
@@ -58,7 +57,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
                         bounds.getRight().x >= spawnPoint.x &&
                         bounds.getLeft().y <= spawnPoint.y &&
                         bounds.getRight().y >= spawnPoint.y
-                );
+        );
     }
 
     /**
@@ -84,6 +83,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
         nbt.putLong("seed", ((LocalRandomAccessor) random).getSeed());
         return nbt;
     }
+
     @Override
     public void modifyFromNbt(NbtCompound tag) {
         Vector2i lowerBounds = new Vector2i(
@@ -97,6 +97,7 @@ public class RandomSpawnPointGenerator implements SpawnPointGenerator {
         setBounds(new Pair<>(lowerBounds, upperBounds));
         random = new LocalRandom(tag.getLong("seed"));
     }
+
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) {
         Vector2i lowerBounds = bounds.getLeft();

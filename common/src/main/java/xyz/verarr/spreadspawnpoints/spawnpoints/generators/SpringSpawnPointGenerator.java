@@ -2,6 +2,7 @@ package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
@@ -9,7 +10,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.border.WorldBorder;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
-import net.minecraft.util.Pair;
 import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
 import xyz.verarr.spreadspawnpoints.mixin.LocalRandomAccessor;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
@@ -35,9 +35,9 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
     );
 
     private final Map<Vector2i, Set<Vector2i>> grid;
+    private final Vector2i worldSpawn;
     private int greatestDistanceFromWorldspawn = 0;
     private Pair<Vector2i, Vector2i> bounds;
-    private final Vector2i worldSpawn;
     private Random random;
     private int reserveRadius = DEFAULT_RESERVE_RADIUS;
     private int overlapRadius = DEFAULT_OVERLAP_RADIUS;
@@ -79,7 +79,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
                 bounds.getLeft().x, worldSpawn.x - worldspawnOverlapRadius
         );
         int lowerZ = MathHelper.clamp(
-                -greatestDistanceFromWorldspawn -  overlapRadius,
+                -greatestDistanceFromWorldspawn - overlapRadius,
                 bounds.getLeft().y, worldSpawn.y - worldspawnOverlapRadius
         );
         int upperX = MathHelper.clamp(
@@ -117,6 +117,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
     private boolean overlaps(Vector2i a, Vector2i b) {
         return a.distance(b) < overlapRadius;
     }
+
     private boolean conflicts(Vector2i a, Vector2i b) {
         return a.distance(b) < reserveRadius;
     }
@@ -124,6 +125,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
     private boolean overlapsWithWorldspawn(Vector2i vec) {
         return vec.distance(worldSpawn) < worldspawnOverlapRadius;
     }
+
     private boolean conflictsWithWorldspawn(Vector2i vec) {
         return vec.distance(worldSpawn) < worldspawnReserveRadius;
     }
@@ -180,7 +182,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     /**
      * Internal method to add a spawnpoint to the generator. Only use this if necessary.
-     *
+     * <p>
      * Implementations may ignore this method.
      *
      * @param spawnPoint spawnpoint to add
@@ -195,7 +197,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     /**
      * Internal method to remove a spawnpoint from the generator. Only use this if necessary.
-     *
+     * <p>
      * Implementations may ignore this method.
      *
      * @param spawnPoint spawnpoint to remove
@@ -228,6 +230,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
         return nbt;
     }
+
     @Override
     public void modifyFromNbt(NbtCompound tag) {
         Vector2i lowerBounds = new Vector2i(
@@ -250,6 +253,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
         worldSpawn.x = tag.getInt("worldspawnX");
         worldSpawn.y = tag.getInt("worldspawnZ");
     }
+
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) {
         Vector2i lowerBounds = bounds.getLeft();

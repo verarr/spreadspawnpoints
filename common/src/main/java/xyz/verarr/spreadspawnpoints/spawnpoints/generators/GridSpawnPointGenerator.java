@@ -35,6 +35,7 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
         moveToNext();
         return vector;
     }
+
     private void moveToNext() {
         switch (direction) {
             case 0: // Move right
@@ -109,6 +110,7 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
 
         return nbt;
     }
+
     @Override
     public void modifyFromNbt(NbtCompound tag) {
         gridSize.x = tag.getInt("gridX");
@@ -123,6 +125,7 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
         stepsInCurrentDirection = state.getInt("stepsInCurrentDirection");
         stepsInCurrentLayer = state.getInt("stepsInCurrentLayer");
     }
+
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) {
         if (tag.contains("gridX", 3))

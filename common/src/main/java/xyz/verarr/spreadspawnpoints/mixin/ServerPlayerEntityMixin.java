@@ -16,12 +16,10 @@ public class ServerPlayerEntityMixin {
     /**
      * Redirects the method that gets the world spawn to an implementation
      * that allows for player-specific default spawn points.
+     *
      * @return the "world" spawn for this player
      */
-    @Redirect(
-            method = "moveToSpawn(Lnet/minecraft/server/world/ServerWorld;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getSpawnPos()Lnet/minecraft/util/math/BlockPos;")
-    )
+    @Redirect(method = "moveToSpawn(Lnet/minecraft/server/world/ServerWorld;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getSpawnPos()Lnet/minecraft/util/math/BlockPos;"))
     BlockPos getSpecificSpawnPos(ServerWorld world) {
         SpreadSpawnPoints.LOGGER.info("Player is being spawned in the world: {}", world.getRegistryKey().getValue().toString());
         SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
