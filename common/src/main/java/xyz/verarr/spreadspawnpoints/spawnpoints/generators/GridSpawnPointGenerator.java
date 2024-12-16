@@ -2,26 +2,24 @@ package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import org.apache.commons.lang3.NotImplementedException;
 import org.joml.Vector2i;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
 public class GridSpawnPointGenerator implements SpawnPointGenerator {
-    public Vector2i gridSize;
+    public final Vector2i gridSize = new Vector2i(16);
+    public final Vector2i offset = new Vector2i(0);
 
-    private int currentX;
-    private int currentY;
-    private int direction; // 0: right, 1: down, 2: left, 3: up
-    private int stepsInCurrentDirection;
-    private int stepsInCurrentLayer;
+    private int currentX = 0;
+    private int currentY = 0;
+    private int direction = 0; // 0: right, 1: down, 2: left, 3: up
+    private int stepsInCurrentDirection = 0;
+    private int stepsInCurrentLayer = 1;
 
     public GridSpawnPointGenerator(ServerWorld serverWorld) {
-        this.currentX = 0;
-        this.currentY = 0;
-        this.direction = 0;
-        this.stepsInCurrentLayer = 1;
-        this.stepsInCurrentDirection = 0;
-        this.gridSize = new Vector2i(16, 16);
+        this.offset.set(
+                serverWorld.getSpawnPos().getX(),
+                serverWorld.getSpawnPos().getZ()
+        );
     }
 
     /**
@@ -31,7 +29,9 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
      */
     @Override
     public Vector2i next() {
-        Vector2i vector = new Vector2i(currentX, currentY).mul(gridSize);
+        Vector2i vector = new Vector2i(currentX, currentY)
+                .mul(gridSize)
+                .add(offset);
         moveToNext();
         return vector;
     }
@@ -73,40 +73,31 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
      */
     @Override
     public boolean isValid(Vector2i spawnPoint) {
-        throw new NotImplementedException();
+        return (
+                (spawnPoint.x - offset.x) % gridSize.x == 0 &&
+                        (spawnPoint.y - offset.y) % gridSize.y == 0
+        );
     }
 
     /**
-     * Internal method to add a spawnpoint to the generator. Only use this if necessary.
-     * <p>
-     * Implementations may ignore this method.
-     *
-     * @param spawnPoint spawnpoint to add
+     * This method is ignored.
      */
     @Override
-    public void add(Vector2i spawnPoint) {
-        if (!isValid(spawnPoint))
-            throw new IllegalArgumentException("Invalid spawnpoint given");
-        throw new NotImplementedException();
-    }
+    public void add(Vector2i spawnPoint) {}
 
     /**
-     * Internal method to remove a spawnpoint from the generator. Only use this if necessary.
-     * <p>
-     * Implementations may ignore this method.
-     *
-     * @param spawnPoint spawnpoint to remove
+     * This method is ignored.
      */
     @Override
-    public void remove(Vector2i spawnPoint) {
-        throw new NotImplementedException();
-    }
+    public void remove(Vector2i spawnPoint) {}
 
     @Override
     public NbtCompound writeNbt() {
         NbtCompound nbt = new NbtCompound();
         nbt.putInt("gridX", gridSize.x);
         nbt.putInt("gridZ", gridSize.y);
+        nbt.putInt("offsetX", offset.x);
+        nbt.putInt("offsetZ", offset.y);
 
         NbtCompound state = new NbtCompound();
         state.putInt("currentX", currentX);
@@ -122,6 +113,8 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
     public void modifyFromNbt(NbtCompound tag) {
         gridSize.x = tag.getInt("gridX");
         gridSize.y = tag.getInt("gridZ");
+        offset.x = tag.getInt("offsetX");
+        offset.y = tag.getInt("offsetZ");
 
         NbtCompound state = tag.getCompound("state");
         currentX = state.getInt("currentX");
@@ -136,5 +129,9 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
             gridSize.x = tag.getInt("gridX");
         if (tag.contains("gridZ", 3))
             gridSize.y = tag.getInt("gridZ");
+        if (tag.contains("offsetX", 3))
+            offset.x = tag.getInt("offsetX");
+        if (tag.contains("offsetZ", 3))
+            offset.y = tag.getInt("offsetZ");
     }
 }
