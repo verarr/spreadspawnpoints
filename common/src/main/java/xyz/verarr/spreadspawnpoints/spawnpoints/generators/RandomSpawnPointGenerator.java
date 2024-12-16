@@ -1,9 +1,7 @@
 package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.border.WorldBorder;
