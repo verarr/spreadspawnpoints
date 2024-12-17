@@ -6,12 +6,12 @@ A mod for Minecraft to spread players' initial spawnpoints around the world sepa
 
 There are several patterns for how new players' spawnpoints are determined:
 
-| name        | identifier                  | description                                                                                                                                                              |
-| ----------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Vanilla** | `spreadspawnpoints:vanilla` | Mimics vanilla behavior, everyone spawns at world spawn.                                                                                                                 |
-| **Random**  | `spreadspawnpoints:random`  | Picks a completely random spawnpoint within specified bounds.                                                                                                            |
-| **Grid**    | `spreadspawnpoints:grid`    | Spawnpoints are arranged in a grid in a spiral-like pattern.                                                                                                             |
-| **Spring**  | `spreadspawnpoints:spring`  | Picks a random spawnpoint that is at least within a specified amount of blocks of another spawnpoint, but at least some specified blocks away from any other spawnpoint. |
+| name                                                                               | identifier                  | description                                                                                                                                                              |
+| ---------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [**Vanilla**](https://github.com/verarr/spreadspawnpoints/wiki/Generators#vanilla) | `spreadspawnpoints:vanilla` | Mimics vanilla behavior, everyone spawns at world spawn.                                                                                                                 |
+| [**Random**](https://github.com/verarr/spreadspawnpoints/wiki/Generators#random)   | `spreadspawnpoints:random`  | Picks a completely random spawnpoint within specified bounds.                                                                                                            |
+| [**Grid**](https://github.com/verarr/spreadspawnpoints/wiki/Generators#grid)       | `spreadspawnpoints:grid`    | Spawnpoints are arranged in a grid in a spiral-like pattern.                                                                                                             |
+| [**Spring**](https://github.com/verarr/spreadspawnpoints/wiki/Generators#spring)   | `spreadspawnpoints:spring`  | Picks a random spawnpoint that is at least within a specified amount of blocks of another spawnpoint, but at least some specified blocks away from any other spawnpoint. |
 | _more coming soon™_ | - | - |
 
 Most generators have more settings which can be adjusted to your liking. See the wiki.
