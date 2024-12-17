@@ -37,7 +37,7 @@ To reset players' spawnpoints:
 # erase all spawnpoints
 /spawnpoints reset
 
-# erase spawnpoints for a specific player
+# erase spawnpoint for a specific player
 /spawnpoints reset Player123
 ```
 
