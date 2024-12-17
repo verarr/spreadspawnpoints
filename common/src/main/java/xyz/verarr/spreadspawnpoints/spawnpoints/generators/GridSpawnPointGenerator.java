@@ -2,6 +2,7 @@ package xyz.verarr.spreadspawnpoints.spawnpoints.generators;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import org.jetbrains.annotations.Contract;
 import org.joml.Vector2i;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
@@ -36,6 +37,10 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
         return vector;
     }
 
+    /**
+     * Spiral pattern algorithm
+     */
+    @Contract(mutates = "this")
     private void moveToNext() {
         switch (direction) {
             case 0: // Move right

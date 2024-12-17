@@ -29,8 +29,16 @@ public class SpawnPointManager extends PersistentState {
      *
      * @param identifier the desired identifier for the generator
      * @param generator  the generator's class
+     * @throws IllegalArgumentException if given SpawnPointGenerator doesn't
+     *                                  have a constructor with a ServerWorld parameter
      */
     public static void registerSpawnPointGenerator(Identifier identifier, Class<? extends SpawnPointGenerator> generator) {
+        try {
+            generator.getConstructor(ServerWorld.class);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("SpawnPointGenerator must have a constructor with a ServerWorld parameter", e);
+        }
+
         registeredSpawnPointGenerators.put(identifier, generator);
     }
 
@@ -71,6 +79,8 @@ public class SpawnPointManager extends PersistentState {
      * @param generatorType type of the generator to construct
      * @param world         server world to use in the constructor
      * @return the newly constructed spawnpoint generator
+     * @throws IllegalArgumentException if given SpawnPointGenerator doesn't
+     *                                  have a constructor with a ServerWorld parameter
      */
     private static SpawnPointGenerator constructSpawnPointGeneratorForWorld(Class<? extends SpawnPointGenerator> generatorType, ServerWorld world) {
         SpawnPointGenerator generator;
@@ -110,6 +120,8 @@ public class SpawnPointManager extends PersistentState {
      * Replaces the currently used spawnpoint generator with a newly
      * constructed one.
      *
+     * @see #registerSpawnPointGenerator(Identifier, Class)
+     *
      * @param identifier the identifier of the new spawnpoint generator type
      */
     public void setSpawnPointGenerator(Identifier identifier) {
@@ -123,6 +135,13 @@ public class SpawnPointManager extends PersistentState {
         playerSpawnPoints.clear();
     }
 
+    /**
+     * Generate a new spawnpoint, iteratively trying until a valid spawnpoint
+     * is found.
+     *
+     * @param world the world in which to search for a valid spawnpoint
+     * @return new valid spawnpoint
+     */
     private Vector2i getNewSpawnpoint(ServerWorld world) {
         int i = 0;
         while (true) {
@@ -169,11 +188,22 @@ public class SpawnPointManager extends PersistentState {
         return Objects.nonNull(playerSpawnPoints.remove(player.getUuid()));
     }
 
+    /**
+     * Helper method.
+     */
     private static ServerWorld getPlayerServerWorld(PlayerEntity player) {
         return Objects.requireNonNull(player.getServer())
                 .getWorld(player.getWorld().getRegistryKey());
     }
 
+    /**
+     * Update data of currently active spawnpoint generator. This may be
+     * settings or state. It is up to the generator implementation to handle
+     * the data passed.
+     *
+     * @param nbt NBT data to be passed to the generator
+     * @see SpawnPointGenerator#modifyFromNbtPartial(NbtCompound)
+     */
     public void updateGeneratorData(NbtCompound nbt) {
         spawnPointGenerator.modifyFromNbtPartial(nbt);
     }
@@ -219,6 +249,12 @@ public class SpawnPointManager extends PersistentState {
         return spawnPointManager;
     }
 
+    /**
+     * Get the SpawnPointManager instance associated with a world.
+     *
+     * @param world the world to get the manager instance for
+     * @return SpawnPointManager instance for the specified world
+     */
     public static SpawnPointManager getInstance(ServerWorld world) {
         SpawnPointManager spawnPointManager = world.getPersistentStateManager().getOrCreate(
                 tag -> createFromNbt(tag, world),

@@ -11,6 +11,7 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtCompoundArgumentType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,8 +26,18 @@ import java.util.Collection;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+/**
+ * Main collection of commands for Spread Spawnpoints
+ */
 public class SpawnpointsCommand {
+    /**
+     * Command for respawning players
+     */
     private static class RespawnCommand {
+        /**
+         * Moves specified players to their spawnpoint and teleports them in
+         * place (so the players' position is actually sent to the clients).
+         */
         private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
             final Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
             players.forEach(player -> {
@@ -47,17 +58,35 @@ public class SpawnpointsCommand {
             return 1;
         }
 
+        /**
+         * Target selector argument.
+         */
         private static final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> argumentBuilder = argument(
                 "target",
                 EntityArgumentType.players()
         ).executes(RespawnCommand::execute);
 
+        /**
+         * Command tree for <code>spawnpoints respawn</code> command.
+         * Executes {@link RespawnCommand#execute(CommandContext)}.
+         */
         public static final LiteralArgumentBuilder<ServerCommandSource> command =
                 literal("respawn").then(argumentBuilder);
     }
 
+    /**
+     * Commands related to spawnpoint generators
+     */
     private static class GeneratorCommand {
+        /**
+         * Command for querying the currently active spawnpoint generator
+         *
+         * @see SpawnPointManager#getSpawnPointGenerator()
+         */
         private static class QueryCommand {
+            /**
+             * Prints current generator's identifier to command feedback.
+             */
             private static int execute(CommandContext<ServerCommandSource> context) {
                 final ServerWorld world = context.getSource().getWorld();
                 final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
@@ -71,11 +100,27 @@ public class SpawnpointsCommand {
                 return Command.SINGLE_SUCCESS;
             }
 
+            /**
+             * Command tree for <code>spawnpoint generator query</code> command
+             */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
                     literal("query").executes(QueryCommand::execute);
         }
 
+        /**
+         * Command for setting (replacing) the spawnpoint generator
+         *
+         * @see SpawnPointManager#setSpawnPointGenerator(Identifier)
+         * @see SpawnPointManager#registerSpawnPointGenerator(Identifier, Class)
+         */
         private static class SetCommand {
+            /**
+             * Sets the generator to the specified one and resets all
+             * spawnpoints.
+             * <p>
+             * Executed when only identifier argument
+             * ({@link SetCommand#identifierArgument}) is specified.
+             */
             private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
                 try {
                     final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
@@ -96,6 +141,14 @@ public class SpawnpointsCommand {
                 }
             }
 
+            /**
+             * Sets the generator to the specified one and resets all
+             * spawnpoints according to reset argument
+             * ({@link SetCommand#resetArgument}).
+             * <p>
+             * Executed when reset argument ({@link SetCommand#resetArgument})
+             * is present.
+             */
             private static int executeWithResetFlag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
                 try {
                     final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
@@ -116,12 +169,24 @@ public class SpawnpointsCommand {
                 }
             }
 
+            /**
+             * Reset boolean argument. Optional, default true. Executes
+             * {@link SetCommand#executeWithResetFlag(CommandContext)} when
+             * specified.
+             *
+             * @see SpawnPointManager#resetSpawnPoints()
+             */
             private static final RequiredArgumentBuilder<ServerCommandSource, Boolean>
                     resetArgument = argument(
                     "resetSpawnPoints",
                     BoolArgumentType.bool()
             ).executes(SetCommand::executeWithResetFlag);
 
+            /**
+             * Identifier argument. Required. Executes
+             * {@link SetCommand#execute(CommandContext)} when no further
+             * arguments specified.
+             */
             private static final RequiredArgumentBuilder<ServerCommandSource, Identifier>
                     identifierArgument = argument(
                     "generator",
@@ -130,11 +195,23 @@ public class SpawnpointsCommand {
                     .executes(SetCommand::execute)
                     .then(resetArgument);
 
+            /**
+             * Command tree for <code>spawnpoints generator set</code> command
+             */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
                     literal("set").then(identifierArgument);
         }
 
+        /**
+         * Command for modifying the data of a spawnpoint generator
+         *
+         * @see SpawnPointManager#updateGeneratorData(NbtCompound)
+         * @see xyz.verarr.spreadspawnpoints.spawnpoints.NBTSerializable#modifyFromNbtPartial(NbtCompound)
+         */
         private static class DataCommand {
+            /**
+             * @see SpawnPointManager#updateGeneratorData(NbtCompound)
+             */
             private static int execute(CommandContext<ServerCommandSource> context) {
                 final NbtCompound nbt = NbtCompoundArgumentType.getNbtCompound(context, "nbt");
                 final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
@@ -142,16 +219,25 @@ public class SpawnpointsCommand {
                 return Command.SINGLE_SUCCESS;
             }
 
+            /**
+             * Passed data argument
+             */
             private static final RequiredArgumentBuilder<ServerCommandSource, NbtCompound>
                     argumentBuilder = argument(
                     "nbt",
                     NbtCompoundArgumentType.nbtCompound()
             ).executes(DataCommand::execute);
 
+            /**
+             * Command tree for <code>spawnpoints generator data</code> command
+             */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
                     literal("data").then(argumentBuilder);
         }
 
+        /**
+         * Command tree for <code>spawnpoints generator</code> command
+         */
         public static LiteralArgumentBuilder<ServerCommandSource> command =
                 literal("generator")
                         .then(QueryCommand.command)
@@ -159,7 +245,16 @@ public class SpawnpointsCommand {
                         .then(DataCommand.command);
     }
 
+    /**
+     * Command for resetting all spawnpoints
+     * ({@link ResetCommand#execute(CommandContext)}) or spawnpoints of
+     * a specified player
+     * ({@link ResetCommand#executeWithArgument(CommandContext)}).
+     */
     private static class ResetCommand {
+        /**
+         * Executed when no argument is specified.
+         */
         private static int execute(CommandContext<ServerCommandSource> context) {
             final ServerWorld world = context.getSource().getWorld();
             final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
@@ -168,6 +263,9 @@ public class SpawnpointsCommand {
             return Command.SINGLE_SUCCESS;
         }
 
+        /**
+         * Executed when {@link #argumentBuilder} is specified.
+         */
         private static int executeWithArgument(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
             final ServerWorld world = context.getSource().getWorld();
             final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
@@ -185,17 +283,30 @@ public class SpawnpointsCommand {
             }
         }
 
+        /**
+         * Reset target argument. When specified, executes
+         * {@link ResetCommand#executeWithArgument(CommandContext)}
+         *
+         * @see SpawnPointManager#resetSpawnPoint(PlayerEntity)
+         */
         private static final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> argumentBuilder = argument(
                 "target",
                 EntityArgumentType.players()
         ).executes(ResetCommand::executeWithArgument);
 
+        /**
+         * Command tree for <code>spawnpoints reset</code> command
+         * @see SpawnPointManager#resetSpawnPoints()
+         */
         public static LiteralArgumentBuilder<ServerCommandSource> command =
                 literal("reset")
                         .executes(ResetCommand::execute)
                         .then(argumentBuilder);
     }
 
+    /**
+     * Full command tree for <code>spawnpoints</code> command
+     */
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
             literal("spawnpoints")
                     .then(RespawnCommand.command)
