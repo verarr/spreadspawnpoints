@@ -1,15 +1,15 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
 #issueTrackerURL = ""
-license = "Insert License Here"
+license = "LGPL-3.0-only"
 
 [[mods]]
 modId = "spreadspawnpoints"
 version = "${version}"
 displayName = "Spread Spawnpoints"
-authors = "Me!"
+authors = "verarr"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Spread all new players around the world in various ways
 '''
 #logoFile = ""
 

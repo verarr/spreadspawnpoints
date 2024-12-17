@@ -3,17 +3,23 @@
   "id": "spreadspawnpoints",
   "version": "${version}",
   "name": "Spread Spawnpoints",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "Spread all new players around the world in various ways",
   "authors": [
-    "Me!"
+    {
+      "name": "verarr",
+      "contact": {
+        "email": "verarr@fvnki.town"
+      }
+    }
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://modrinth.com/project/spreadspawnpoints",
+    "sources": "https://github.com/verarr/spreadspawnpoints",
+    "issues": "https://github.com/verarr/spreadspawnpoints/issues"
   },
-  "license": "CC0-1.0",
+  "license": "LGPL-3.0-only",
   "icon": "assets/spreadspawnpoints/icon.png",
-  "environment": "*",
+  "environment": "server",
   "entrypoints": {
     "main": [
       "xyz.verarr.spreadspawnpoints.fabric.SpreadSpawnPointsFabric"
@@ -31,8 +37,5 @@
     "java": ">=17",
     "architectury": ">=9.2.14",
     "fabric-api": "*"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }
