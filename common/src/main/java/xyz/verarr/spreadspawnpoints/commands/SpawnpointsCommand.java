@@ -18,7 +18,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import xyz.verarr.spreadspawnpoints.mixin.ServerPlayerEntityInvoker;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
 
 import java.util.Collection;
@@ -30,50 +29,6 @@ import static net.minecraft.server.command.CommandManager.literal;
  * Main collection of commands for Spread Spawnpoints
  */
 public class SpawnpointsCommand {
-    /**
-     * Command for respawning players
-     */
-    private static class RespawnCommand {
-        /**
-         * Moves specified players to their spawnpoint and teleports them in
-         * place (so the players' position is actually sent to the clients).
-         */
-        private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-            final Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
-            players.forEach(player -> {
-                ((ServerPlayerEntityInvoker) player).invokeMoveToSpawn(player.getServerWorld());
-                player.teleport(
-                        player.getServerWorld(),
-                        player.getX(),
-                        player.getY(),
-                        player.getZ(),
-                        player.getYaw(),
-                        player.getPitch()
-                );
-            });
-            context.getSource().sendFeedback(
-                    () -> Text.literal(String.format("Respawned %d players", players.size())),
-                    true
-            );
-            return 1;
-        }
-
-        /**
-         * Target selector argument.
-         */
-        private static final RequiredArgumentBuilder<ServerCommandSource, EntitySelector> argumentBuilder = argument(
-                "target",
-                EntityArgumentType.players()
-        ).executes(RespawnCommand::execute);
-
-        /**
-         * Command tree for <code>spawnpoints respawn</code> command.
-         * Executes {@link RespawnCommand#execute(CommandContext)}.
-         */
-        public static final LiteralArgumentBuilder<ServerCommandSource> command =
-                literal("respawn").then(argumentBuilder);
-    }
-
     /**
      * Commands related to spawnpoint generators
      */
@@ -309,7 +264,6 @@ public class SpawnpointsCommand {
      */
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
             literal("spawnpoints")
-                    .then(RespawnCommand.command)
                     .then(GeneratorCommand.command)
                     .then(ResetCommand.command);
 }

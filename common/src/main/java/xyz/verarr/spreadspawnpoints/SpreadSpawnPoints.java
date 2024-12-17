@@ -4,8 +4,9 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
+import xyz.verarr.spreadspawnpoints.commands.RespawnCommand;
 import xyz.verarr.spreadspawnpoints.commands.SpawnpointsCommand;
+import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.GridSpawnPointGenerator;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.RandomSpawnPointGenerator;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.SpringSpawnPointGenerator;
@@ -45,5 +46,6 @@ public final class SpreadSpawnPoints {
 
     static void initCommands() {
         CommandRegistrationEvent.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(SpawnpointsCommand.command));
+        CommandRegistrationEvent.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(RespawnCommand.command));
     }
 }
