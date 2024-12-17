@@ -23,9 +23,6 @@
   "entrypoints": {
     "main": [
       "xyz.verarr.spreadspawnpoints.fabric.SpreadSpawnPointsFabric"
-    ],
-    "client": [
-      "xyz.verarr.spreadspawnpoints.fabric.client.SpreadSpawnPointsFabricClient"
     ]
   },
   "mixins": [
