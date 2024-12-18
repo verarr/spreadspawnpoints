@@ -11,7 +11,7 @@ authors = "verarr"
 description = '''
 Spread all new players around the world in various ways
 '''
-#logoFile = ""
+logoFile = "assets/spreadspawnpoints/icon.png"
 
 [[dependencies.spreadspawnpoints]]
 modId = "forge"
