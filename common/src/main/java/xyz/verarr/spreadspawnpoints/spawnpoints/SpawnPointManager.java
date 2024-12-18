@@ -1,5 +1,7 @@
 package xyz.verarr.spreadspawnpoints.spawnpoints;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -7,8 +9,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
 import org.joml.Vector2i;
-import org.spongepowered.include.com.google.common.collect.BiMap;
-import org.spongepowered.include.com.google.common.collect.HashBiMap;
 import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.VanillaSpawnPointGenerator;
 
