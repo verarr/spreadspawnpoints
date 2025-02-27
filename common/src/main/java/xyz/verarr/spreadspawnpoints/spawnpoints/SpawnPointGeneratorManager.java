@@ -138,8 +138,10 @@ public class SpawnPointGeneratorManager {
         while (true) {
             i++;
             Vector2i spawnPoint = generator.next();
-            if (SpawnPointHelper.isValidSpawnPoint(serverWorld,
-                    new BlockPos(spawnPoint.x, 0, spawnPoint.y))) {
+
+            boolean vanillaValid = SpawnPointHelper.isValidSpawnPoint(serverWorld, new BlockPos(spawnPoint.x, 0, spawnPoint.y));
+            boolean customValid = generator.isValid(spawnPoint);
+            if (vanillaValid && customValid) {
                 if (i > 1)
                     SpreadSpawnPoints.LOGGER.info("Iterated through {} " +
                             "spawnpoints before valid spawnpoint found", i);

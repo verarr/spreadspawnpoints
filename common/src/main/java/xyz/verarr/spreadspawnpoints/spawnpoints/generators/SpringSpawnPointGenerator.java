@@ -83,22 +83,10 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
                 worldSpawn.y + worldspawnOverlapRadius, upperBounds.y
         );
 
-        int i = 0;
-        while (i < 100) {
-            i++;
-            Vector2i randomSpawnPoint =
-                    new Vector2i(
-                            random.nextBetween(lowerX, upperX),
-                            random.nextBetween(lowerZ, upperZ)
-                    );
-            if (isValid(randomSpawnPoint)) {
-                SpreadSpawnPoints.LOGGER.info("Spring spawnpoint generator " +
-                        "iterated over {} spawnpoints", i);
-                return randomSpawnPoint;
-            }
-        }
-        throw new RuntimeException("Spring spawnpoint generator couldn't " +
-                "generate new valid spawnpoint.");
+        return new Vector2i(
+                random.nextBetween(lowerX, upperX),
+                random.nextBetween(lowerZ, upperZ)
+        );
     }
 
     private Vector2i gridCoordinates(Vector2i worldCoordinates) {
