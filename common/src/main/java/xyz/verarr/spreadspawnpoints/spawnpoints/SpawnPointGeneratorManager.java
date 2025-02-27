@@ -143,18 +143,22 @@ public class SpawnPointGeneratorManager {
             Vector2i spawnPoint = generator.next();
 
             boolean customValid = generator.isValid(spawnPoint);
-            if (!customValid) customInvalid++;
+            if (!customValid) {
+                customInvalid++;
+                continue;
+            }
 
             boolean vanillaValid = SpawnPointHelper.isValidSpawnPoint(serverWorld, new BlockPos(spawnPoint.x, 0, spawnPoint.y));
-            if (!vanillaValid) vanillaInvalid++;
-
-            if (vanillaValid && customValid) {
-                if (vanillaInvalid + customInvalid > 1)
-                    SpreadSpawnPoints.LOGGER.info("Iterated through {} spawnpoints ({} gamerule-invalid, {} generator-invalid) before valid spawnpoint found",
-                            vanillaInvalid + customInvalid, vanillaInvalid, customInvalid);
-                generator.add(spawnPoint);
-                return spawnPoint;
+            if (!vanillaValid) {
+                vanillaInvalid++;
+                continue;
             }
+
+            if (vanillaInvalid + customInvalid > 1)
+                SpreadSpawnPoints.LOGGER.info("Iterated through {} spawnpoints ({} gamerule-invalid, {} generator-invalid) before valid spawnpoint found",
+                        vanillaInvalid + customInvalid, vanillaInvalid, customInvalid);
+            generator.add(spawnPoint);
+            return spawnPoint;
         }
     }
 
