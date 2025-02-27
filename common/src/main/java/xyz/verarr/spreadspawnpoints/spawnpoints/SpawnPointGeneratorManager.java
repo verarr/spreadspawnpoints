@@ -189,7 +189,7 @@ public class SpawnPointGeneratorManager {
      * @param nbt NBT data to be passed to the generator
      * @see SpawnPointGenerator#modifyFromNbtPartial(NbtCompound)
      */
-    public void modifyFromNbtPartial(NbtCompound nbt) {
+    public void modifyFromNbtPartial(NbtCompound nbt) throws IllegalArgumentException {
         generator.modifyFromNbtPartial(nbt);
     }
 

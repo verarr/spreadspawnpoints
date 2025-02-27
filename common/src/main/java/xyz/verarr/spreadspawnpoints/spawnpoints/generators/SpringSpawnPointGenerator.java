@@ -230,7 +230,24 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
     }
 
     @Override
-    public void modifyFromNbtPartial(NbtCompound tag) {
+    public void modifyFromNbtPartial(NbtCompound tag) throws IllegalArgumentException {
+        Set<String> differenceSet = new HashSet<>(tag.getKeys());
+        differenceSet.removeAll(Set.of("lowerX", "lowerZ", "upperX", "upperZ", "seed", "reserveRadius", "overlapRadius", "worldspawnReserveRadius", "worldspawnOverlapRadius", "worldspawnX", "worldspawnZ"));
+        if (!differenceSet.isEmpty())
+            throw new IllegalArgumentException("Invalid tag keys: " + differenceSet.stream().reduce((a, b) -> a + ", " + b).orElse("(none)"));
+
+        if (tag.contains("lowerX") && tag.getType("lowerX") != 3) throw new IllegalArgumentException("lowerX must be an integer");
+        if (tag.contains("lowerZ") && tag.getType("lowerZ") != 3) throw new IllegalArgumentException("lowerZ must be an integer");
+        if (tag.contains("upperX") && tag.getType("upperX") != 3) throw new IllegalArgumentException("upperX must be an integer");
+        if (tag.contains("upperZ") && tag.getType("upperZ") != 3) throw new IllegalArgumentException("upperZ must be an integer");
+        if (tag.contains("seed") && tag.getType("seed") != 4) throw new IllegalArgumentException("seed must be a long");
+        if (tag.contains("reserveRadius") && tag.getType("reserveRadius") != 3) throw new IllegalArgumentException("reserveRadius must be an integer");
+        if (tag.contains("overlapRadius") && tag.getType("overlapRadius") != 3) throw new IllegalArgumentException("overlapRadius must be an integer");
+        if (tag.contains("worldspawnReserveRadius") && tag.getType("worldspawnReserveRadius") != 3) throw new IllegalArgumentException("worldspawnReserveRadius must be an integer");
+        if (tag.contains("worldspawnOverlapRadius") && tag.getType("worldspawnOverlapRadius") != 3) throw new IllegalArgumentException("worldspawnOverlapRadius must be an integer");
+        if (tag.contains("worldspawnX") && tag.getType("worldspawnX") != 3) throw new IllegalArgumentException("worldspawnX must be an integer");
+        if (tag.contains("worldspawnZ") && tag.getType("worldspawnZ") != 3) throw new IllegalArgumentException("worldspawnZ must be an integer");
+
         if (tag.contains("lowerX", 3))
             lowerBounds.x = tag.getInt("lowerX");
         if (tag.contains("lowerZ", 3))

@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Contract;
 import org.joml.Vector2i;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class GridSpawnPointGenerator implements SpawnPointGenerator {
     public final Vector2i gridSize = new Vector2i(16);
     public final Vector2i offset = new Vector2i(0);
@@ -132,7 +135,17 @@ public class GridSpawnPointGenerator implements SpawnPointGenerator {
     }
 
     @Override
-    public void modifyFromNbtPartial(NbtCompound tag) {
+    public void modifyFromNbtPartial(NbtCompound tag) throws IllegalArgumentException {
+        Set<String> differenceSet = new HashSet<>(tag.getKeys());
+        differenceSet.removeAll(Set.of("gridX", "gridZ", "offsetX", "offsetZ"));
+        if (!differenceSet.isEmpty())
+            throw new IllegalArgumentException("Invalid tag keys: " + differenceSet.stream().reduce((a, b) -> a + ", " + b).orElse("(none)"));
+
+        if (tag.contains("gridX") && tag.getType("gridX") != 3) throw new IllegalArgumentException("gridX must be an integer");
+        if (tag.contains("gridZ") && tag.getType("gridZ") != 3) throw new IllegalArgumentException("gridZ must be an integer");
+        if (tag.contains("offsetX") && tag.getType("offsetX") != 3) throw new IllegalArgumentException("offsetX must be an integer");
+        if (tag.contains("offsetZ") && tag.getType("offsetZ") != 3) throw new IllegalArgumentException("offsetZ must be an integer");
+
         if (tag.contains("gridX", 3))
             gridSize.x = tag.getInt("gridX");
         if (tag.contains("gridZ", 3))
