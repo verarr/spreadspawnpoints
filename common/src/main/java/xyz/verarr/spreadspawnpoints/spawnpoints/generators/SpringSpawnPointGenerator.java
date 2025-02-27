@@ -124,23 +124,23 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
                 upperBounds.y >= spawnPoint.y))
             return false;
 
-        int overlaps = 0;
+        boolean overlaps = false;
 
         if (conflictsWithWorldspawn(spawnPoint))
             return false;
         if (overlapsWithWorldspawn(spawnPoint))
-            overlaps++;
+            overlaps = true;
 
         List<Vector2i> affectedSpawnPoints =
                 getAffectedSpawnPoints(spawnPoint).toList();
         for (Vector2i affectedSpawnPoint : affectedSpawnPoints) {
             if (conflicts(affectedSpawnPoint, spawnPoint))
                 return false;
-            if (overlaps(affectedSpawnPoint, spawnPoint))
-                overlaps++;
+            if (!overlaps && overlaps(affectedSpawnPoint, spawnPoint))
+                overlaps = true;
         }
 
-        if (overlaps < 1)
+        if (!overlaps)
             return false;
 
         return true;
