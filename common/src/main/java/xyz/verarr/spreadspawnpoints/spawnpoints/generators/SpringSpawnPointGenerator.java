@@ -44,7 +44,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
 
     // state
     private final Random random;
-    private final Map<Vector2i, Set<Vector2i>> grid = new HashMap<>();
+    private Map<Vector2i, Set<Vector2i>> grid = new HashMap<>();
     private int greatestDistanceFromWorldspawn = 0;
 
     public SpringSpawnPointGenerator(ServerWorld serverWorld) {
@@ -171,8 +171,7 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
     public void add(Vector2i spawnPoint) {
         if ((int) spawnPoint.distance(worldSpawn) > greatestDistanceFromWorldspawn)
             greatestDistanceFromWorldspawn = (int) spawnPoint.distance(worldSpawn);
-        grid.putIfAbsent(gridCoordinates(spawnPoint), new HashSet<>());
-        grid.get(gridCoordinates(spawnPoint)).add(spawnPoint);
+        grid.computeIfAbsent(gridCoordinates(spawnPoint), c -> new HashSet<>()).add(spawnPoint);
     }
 
     /**
@@ -229,6 +228,14 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
         worldSpawn.y = tag.getInt("worldspawnZ");
     }
 
+    private void migrateGrid() {
+        Map<Vector2i, Set<Vector2i>> oldGrid = grid;
+        grid = new HashMap<>();
+        oldGrid.forEach((gridCoordinates, spawnPoints) -> {
+            spawnPoints.forEach(this::add);
+        });
+    }
+
     @Override
     public void modifyFromNbtPartial(NbtCompound tag) throws IllegalArgumentException {
         Set<String> differenceSet = new HashSet<>(tag.getKeys());
@@ -273,5 +280,8 @@ public class SpringSpawnPointGenerator implements SpawnPointGenerator {
             worldSpawn.x = tag.getInt("worldspawnX");
         if (tag.contains("worldspawnZ", 3))
             worldSpawn.y = tag.getInt("worldspawnZ");
+
+        if (tag.contains("overlapRadius", 3))
+            migrateGrid();
     }
 }
