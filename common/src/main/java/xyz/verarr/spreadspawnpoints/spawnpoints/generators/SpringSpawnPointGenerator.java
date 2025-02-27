@@ -9,7 +9,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.border.WorldBorder;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
-import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
 import xyz.verarr.spreadspawnpoints.mixin.LocalRandomAccessor;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGenerator;
 
