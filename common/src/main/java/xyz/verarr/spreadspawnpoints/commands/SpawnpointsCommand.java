@@ -19,6 +19,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
+import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGeneratorManager;
 
 import java.util.Collection;
 
@@ -36,7 +37,7 @@ public class SpawnpointsCommand {
         /**
          * Command for querying the currently active spawnpoint generator
          *
-         * @see SpawnPointManager#getSpawnPointGenerator()
+         * @see SpawnPointGeneratorManager#getSpawnPointGenerator()
          */
         private static class QueryCommand {
             /**
@@ -48,7 +49,7 @@ public class SpawnpointsCommand {
                 context.getSource().sendFeedback(
                         () -> Text.literal(String.format(
                                 "The spawn point generator is %s",
-                                spawnPointManager.getSpawnPointGenerator().toString()
+                                spawnPointManager.generatorManager.getSpawnPointGenerator().toString()
                         )),
                         false
                 );
@@ -65,8 +66,8 @@ public class SpawnpointsCommand {
         /**
          * Command for setting (replacing) the spawnpoint generator
          *
-         * @see SpawnPointManager#setSpawnPointGenerator(Identifier)
-         * @see SpawnPointManager#registerSpawnPointGenerator(Identifier, Class)
+         * @see SpawnPointGeneratorManager#setSpawnPointGenerator(Identifier)
+         * @see SpawnPointGeneratorManager#registerSpawnPointGenerator(Identifier, Class)
          */
         private static class SetCommand {
             /**
@@ -79,12 +80,12 @@ public class SpawnpointsCommand {
             private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
                 try {
                     final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
-                    if (!SpawnPointManager.spawnPointGeneratorExists(identifier)) {
+                    if (!SpawnPointGeneratorManager.spawnPointGeneratorExists(identifier)) {
                         throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
                     }
                     final ServerWorld serverWorld = context.getSource().getWorld();
                     final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(serverWorld);
-                    spawnPointManager.setSpawnPointGenerator(identifier);
+                    spawnPointManager.generatorManager.setSpawnPointGenerator(identifier);
                     context.getSource().sendFeedback(() -> Text.literal(String.format(
                             "Spawn point generator set to %s",
                             identifier.toString()
@@ -107,11 +108,11 @@ public class SpawnpointsCommand {
             private static int executeWithResetFlag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
                 try {
                     final Identifier identifier = IdentifierArgumentType.getIdentifier(context, "generator");
-                    if (!SpawnPointManager.spawnPointGeneratorExists(identifier)) {
+                    if (!SpawnPointGeneratorManager.spawnPointGeneratorExists(identifier)) {
                         throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
                     }
                     final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
-                    spawnPointManager.setSpawnPointGenerator(identifier);
+                    spawnPointManager.generatorManager.setSpawnPointGenerator(identifier);
                     context.getSource().sendFeedback(() -> Text.literal(String.format(
                             "Spawn point generator set to %s",
                             identifier.toString()
@@ -160,17 +161,17 @@ public class SpawnpointsCommand {
         /**
          * Command for modifying the data of a spawnpoint generator
          *
-         * @see SpawnPointManager#updateGeneratorData(NbtCompound)
+         * @see SpawnPointGeneratorManager#modifyFromNbtPartial(NbtCompound) (NbtCompound)
          * @see xyz.verarr.spreadspawnpoints.spawnpoints.NBTSerializable#modifyFromNbtPartial(NbtCompound)
          */
         private static class DataCommand {
             /**
-             * @see SpawnPointManager#updateGeneratorData(NbtCompound)
+             * @see SpawnPointGeneratorManager#modifyFromNbtPartial(NbtCompound) (NbtCompound)
              */
             private static int execute(CommandContext<ServerCommandSource> context) {
                 final NbtCompound nbt = NbtCompoundArgumentType.getNbtCompound(context, "nbt");
                 final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
-                spawnPointManager.updateGeneratorData(nbt);
+                spawnPointManager.generatorManager.modifyFromNbtPartial(nbt);
                 return Command.SINGLE_SUCCESS;
             }
 
