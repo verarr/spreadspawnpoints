@@ -142,11 +142,11 @@ public class SpawnPointGeneratorManager {
 
             Vector2i spawnPoint = generator.next();
 
-            boolean vanillaValid = SpawnPointHelper.isValidSpawnPoint(serverWorld, new BlockPos(spawnPoint.x, 0, spawnPoint.y));
-            if (!vanillaValid) vanillaInvalid++;
-
             boolean customValid = generator.isValid(spawnPoint);
             if (!customValid) customInvalid++;
+
+            boolean vanillaValid = SpawnPointHelper.isValidSpawnPoint(serverWorld, new BlockPos(spawnPoint.x, 0, spawnPoint.y));
+            if (!vanillaValid) vanillaInvalid++;
 
             if (vanillaValid && customValid) {
                 if (vanillaInvalid + customInvalid > 1)
