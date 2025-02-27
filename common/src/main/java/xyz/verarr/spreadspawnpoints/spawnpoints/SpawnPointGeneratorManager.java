@@ -137,6 +137,9 @@ public class SpawnPointGeneratorManager {
         int vanillaInvalid = 0;
         int customInvalid = 0;
         while (true) {
+            if (vanillaInvalid + customInvalid % 100 == 0 && vanillaInvalid + customInvalid != 0)
+                SpreadSpawnPoints.LOGGER.warn("Iterating through {}th spawnpoint", vanillaInvalid + customInvalid);
+
             Vector2i spawnPoint = generator.next();
 
             boolean vanillaValid = SpawnPointHelper.isValidSpawnPoint(serverWorld, new BlockPos(spawnPoint.x, 0, spawnPoint.y));
