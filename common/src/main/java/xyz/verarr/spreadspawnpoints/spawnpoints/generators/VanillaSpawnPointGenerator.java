@@ -61,5 +61,5 @@ public class VanillaSpawnPointGenerator implements SpawnPointGenerator {
     public void modifyFromNbt(NbtCompound tag) {}
 
     @Override
-    public void modifyFromNbtPartial(NbtCompound tag) {}
+    public void modifyFromNbtPartial(NbtCompound tag) throws IllegalArgumentException {}
 }

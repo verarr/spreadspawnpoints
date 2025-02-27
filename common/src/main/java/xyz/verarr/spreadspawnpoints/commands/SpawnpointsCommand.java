@@ -168,10 +168,15 @@ public class SpawnpointsCommand {
             /**
              * @see SpawnPointGeneratorManager#modifyFromNbtPartial(NbtCompound) (NbtCompound)
              */
-            private static int execute(CommandContext<ServerCommandSource> context) {
+            private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
                 final NbtCompound nbt = NbtCompoundArgumentType.getNbtCompound(context, "nbt");
                 final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
-                spawnPointManager.generatorManager.modifyFromNbtPartial(nbt);
+                try {
+                    spawnPointManager.generatorManager.modifyFromNbtPartial(nbt);
+                } catch (IllegalArgumentException e) {
+                    throw new SimpleCommandExceptionType(Text.literal("Illegal data passed to generator: " + e.getMessage())).create();
+                }
+                context.getSource().sendFeedback(() -> Text.literal("Data modified. (" + nbt.getKeys().size() + " keys updated)"), true);
                 return Command.SINGLE_SUCCESS;
             }
 

@@ -7,5 +7,5 @@ public interface NBTSerializable {
 
     void modifyFromNbt(NbtCompound tag);
 
-    void modifyFromNbtPartial(NbtCompound tag);
+    void modifyFromNbtPartial(NbtCompound tag) throws IllegalArgumentException;
 }
