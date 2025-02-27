@@ -16,14 +16,12 @@ import java.util.UUID;
 public class SpawnPointManager extends PersistentState {
     private final Map<UUID, Vector2i> playerSpawnPoints = new HashMap<>();
 
-    private ServerWorld serverWorld;
     public SpawnPointGeneratorManager generatorManager;
 
     private SpawnPointManager() {}
 
     private SpawnPointManager(ServerWorld world) {
         this.generatorManager = new SpawnPointGeneratorManager(world);
-        this.serverWorld = world;
     }
 
     /**
@@ -84,7 +82,6 @@ public class SpawnPointManager extends PersistentState {
 
     public static SpawnPointManager createFromNbt(NbtCompound tag, ServerWorld world) {
         SpawnPointManager spawnPointManager = new SpawnPointManager();
-        spawnPointManager.serverWorld = world;
 
         spawnPointManager.generatorManager = new SpawnPointGeneratorManager(world);
         spawnPointManager.generatorManager.setSpawnPointGenerator(new Identifier(tag.getString("spawnPointGenerator")));
