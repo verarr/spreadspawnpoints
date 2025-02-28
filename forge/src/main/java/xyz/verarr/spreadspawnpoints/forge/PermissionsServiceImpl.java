@@ -1,5 +1,6 @@
 package xyz.verarr.spreadspawnpoints.forge;
 
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraftforge.server.permission.PermissionAPI;
 import net.minecraftforge.server.permission.nodes.PermissionTypes;
@@ -20,5 +21,12 @@ public class PermissionsServiceImpl extends PermissionsService {
                 .filter(node -> node.getType() == PermissionTypes.BOOLEAN)
                 .filter(node -> node.getNodeName().equals(permissionNode))
                 .anyMatch(node -> (boolean)node.getDefaultResolver().resolve(player,player.getUuid()));
+    }
+
+    public static boolean hasPermission(@NotNull ServerCommandSource commandSource,
+                                        @NotNull String permission,
+                                        int defaultPermissionLevel) {
+
+        return commandSource.hasPermissionLevel(defaultPermissionLevel);
     }
 }

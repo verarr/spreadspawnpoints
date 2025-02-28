@@ -59,5 +59,5 @@ public class RespawnCommand {
      */
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
             literal("respawn").then(argumentBuilder)
-                    .requires(source -> PermissionsService.hasPermission(source.getPlayer(), "command.respawn", 2));
+                    .requires(source -> PermissionsService.sourceHasPermission(source, "command.respawn", 2));
 }
