@@ -293,6 +293,7 @@ public class SpawnpointsCommand {
      */
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
             literal("spawnpoints")
+                    .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints", 2))
                     .then(GeneratorCommand.command)
                     .then(ResetCommand.command);
 }
