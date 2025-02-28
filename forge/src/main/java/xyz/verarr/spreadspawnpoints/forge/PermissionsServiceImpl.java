@@ -20,7 +20,7 @@ public class PermissionsServiceImpl extends PermissionsService {
         return PermissionAPI.getRegisteredNodes().stream()
                 .filter(node -> node.getType() == PermissionTypes.BOOLEAN)
                 .filter(node -> node.getNodeName().equals(permissionNode))
-                .anyMatch(node -> (boolean)node.getDefaultResolver().resolve(player,player.getUuid()));
+                .anyMatch(node -> (boolean) node.getDefaultResolver().resolve(player, player.getUuid()));
     }
 
     public static boolean hasPermission(@NotNull ServerCommandSource commandSource,
