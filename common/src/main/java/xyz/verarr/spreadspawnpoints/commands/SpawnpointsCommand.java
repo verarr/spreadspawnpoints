@@ -61,8 +61,9 @@ public class SpawnpointsCommand {
              * Command tree for <code>spawnpoint generator query</code> command
              */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
-                    literal("query").executes(QueryCommand::execute)
-                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.query", 2));
+                    literal("query")
+                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.query", 2))
+                            .executes(QueryCommand::execute);
         }
 
         /**
@@ -167,8 +168,9 @@ public class SpawnpointsCommand {
              * Command tree for <code>spawnpoints generator set</code> command
              */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
-                    literal("set").then(identifierArgument)
-                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.set", 2));
+                    literal("set")
+                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.set", 2))
+                            .then(identifierArgument);
         }
 
         /**
@@ -206,8 +208,9 @@ public class SpawnpointsCommand {
              * Command tree for <code>spawnpoints generator data</code> command
              */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
-                    literal("data").then(argumentBuilder)
-                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.modify", 2));
+                    literal("data")
+                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.modify", 2))
+                            .then(argumentBuilder);
         }
 
         /**
