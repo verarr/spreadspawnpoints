@@ -9,6 +9,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import xyz.verarr.spreadspawnpoints.PermissionsService;
 import xyz.verarr.spreadspawnpoints.mixin.ServerPlayerEntityInvoker;
 
 import java.util.Collection;
@@ -57,5 +58,6 @@ public class RespawnCommand {
      * Executes {@link RespawnCommand#execute(CommandContext)}.
      */
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
-            literal("respawn").then(argumentBuilder);
+            literal("respawn").then(argumentBuilder)
+                    .requires(source -> PermissionsService.hasPermission(source.getPlayer(), "command.respawn", 2));
 }
