@@ -11,6 +11,7 @@ import xyz.verarr.spreadspawnpoints.SpreadSpawnPoints;
 import xyz.verarr.spreadspawnpoints.spawnpoints.generators.VanillaSpawnPointGenerator;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 
 public class SpawnPointGeneratorManager {
     private static final Class<? extends SpawnPointGenerator> DEFAULT_SPAWNPOINT_GENERATOR = VanillaSpawnPointGenerator.class;
@@ -64,6 +65,10 @@ public class SpawnPointGeneratorManager {
      */
     private static Identifier lookupSpawnPointGeneratorIdentifier(Class<? extends SpawnPointGenerator> generator) {
         return registeredSpawnPointGenerators.inverse().get(generator);
+    }
+
+    public static Collection<Identifier> getRegisteredSpawnPointGenerators() {
+        return registeredSpawnPointGenerators.keySet();
     }
 
     /**
