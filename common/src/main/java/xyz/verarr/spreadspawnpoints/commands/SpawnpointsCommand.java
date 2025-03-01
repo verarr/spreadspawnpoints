@@ -161,6 +161,7 @@ public class SpawnpointsCommand {
                     "generator",
                     IdentifierArgumentType.identifier()
             )
+                    .suggests(new GeneratorSuggestionProvider())
                     .executes(SetCommand::execute)
                     .then(resetArgument);
 
