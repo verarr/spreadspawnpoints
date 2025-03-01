@@ -4,11 +4,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import xyz.verarr.spreadspawnpoints.PermissionsService;
 import xyz.verarr.spreadspawnpoints.mixin.ServerPlayerEntityInvoker;
 
 import java.util.Collection;
@@ -26,6 +28,18 @@ public class RespawnCommand {
      */
     private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         final Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "target");
+
+        ServerPlayerEntity sourcePlayer = context.getSource().getPlayer();
+        if (sourcePlayer != null) {
+            boolean permissionSelf = PermissionsService.hasPermission(sourcePlayer, "command.respawn.self", 2);
+            boolean permissionOthers = PermissionsService.hasPermission(sourcePlayer, "command.respawn.others", 2);
+            if (!permissionSelf && players.contains(sourcePlayer))
+                throw new SimpleCommandExceptionType(Text.literal("You do not have permission to respawn yourself.")).create();
+            if (!permissionOthers && players.stream().anyMatch(player -> !player.equals(sourcePlayer)))
+                throw new SimpleCommandExceptionType(Text.literal("You do not have permission to respawn other players.")).create();
+        } else if (!PermissionsService.sourceHasPermission(context.getSource(), "command.respawn.others", 2))
+            throw new SimpleCommandExceptionType(Text.literal("Source does not have permission to use this command.")).create();
+
         players.forEach(player -> {
             ((ServerPlayerEntityInvoker) player).invokeMoveToSpawn(player.getServerWorld());
             player.teleport(
@@ -57,5 +71,7 @@ public class RespawnCommand {
      * Executes {@link RespawnCommand#execute(CommandContext)}.
      */
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
-            literal("respawn").then(argumentBuilder);
+            literal("respawn")
+                    .requires(source -> PermissionsService.sourceHasPermission(source, "command.respawn", 2))
+                    .then(argumentBuilder);
 }

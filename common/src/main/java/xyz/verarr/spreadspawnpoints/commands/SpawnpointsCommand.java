@@ -18,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import xyz.verarr.spreadspawnpoints.PermissionsService;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointManager;
 import xyz.verarr.spreadspawnpoints.spawnpoints.SpawnPointGeneratorManager;
 
@@ -60,7 +61,9 @@ public class SpawnpointsCommand {
              * Command tree for <code>spawnpoint generator query</code> command
              */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
-                    literal("query").executes(QueryCommand::execute);
+                    literal("query")
+                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.query", 2))
+                            .executes(QueryCommand::execute);
         }
 
         /**
@@ -83,6 +86,11 @@ public class SpawnpointsCommand {
                     if (!SpawnPointGeneratorManager.spawnPointGeneratorExists(identifier)) {
                         throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
                     }
+
+                    if (!PermissionsService.sourceHasPermission(context.getSource(), "command.spawnpoints.reset.all", 2)) {
+                        throw new SimpleCommandExceptionType(Text.literal("You do not have permission to reset all spawnpoints.")).create();
+                    }
+
                     final ServerWorld serverWorld = context.getSource().getWorld();
                     final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(serverWorld);
                     spawnPointManager.generatorManager.setSpawnPointGenerator(identifier);
@@ -111,6 +119,11 @@ public class SpawnpointsCommand {
                     if (!SpawnPointGeneratorManager.spawnPointGeneratorExists(identifier)) {
                         throw new SimpleCommandExceptionType(Text.literal("Specified generator does not exist or has not been registered")).create();
                     }
+
+                    if (BoolArgumentType.getBool(context, "resetSpawnPoints") && !PermissionsService.sourceHasPermission(context.getSource(), "command.spawnpoints.reset.all", 2)) {
+                        throw new SimpleCommandExceptionType(Text.literal("You do not have permission to reset all spawnpoints.")).create();
+                    }
+
                     final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(context.getSource().getWorld());
                     spawnPointManager.generatorManager.setSpawnPointGenerator(identifier);
                     context.getSource().sendFeedback(() -> Text.literal(String.format(
@@ -155,7 +168,9 @@ public class SpawnpointsCommand {
              * Command tree for <code>spawnpoints generator set</code> command
              */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
-                    literal("set").then(identifierArgument);
+                    literal("set")
+                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.set", 2))
+                            .then(identifierArgument);
         }
 
         /**
@@ -193,7 +208,9 @@ public class SpawnpointsCommand {
              * Command tree for <code>spawnpoints generator data</code> command
              */
             public static final LiteralArgumentBuilder<ServerCommandSource> command =
-                    literal("data").then(argumentBuilder);
+                    literal("data")
+                            .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator.modify", 2))
+                            .then(argumentBuilder);
         }
 
         /**
@@ -201,6 +218,7 @@ public class SpawnpointsCommand {
          */
         public static LiteralArgumentBuilder<ServerCommandSource> command =
                 literal("generator")
+                        .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.generator", 2))
                         .then(QueryCommand.command)
                         .then(SetCommand.command)
                         .then(DataCommand.command);
@@ -216,7 +234,11 @@ public class SpawnpointsCommand {
         /**
          * Executed when no argument is specified.
          */
-        private static int execute(CommandContext<ServerCommandSource> context) {
+        private static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+            if (!PermissionsService.sourceHasPermission(context.getSource(), "command.spawnpoints.reset.all", 2)) {
+                throw new SimpleCommandExceptionType(Text.literal("You do not have permission to reset all spawnpoints.")).create();
+            }
+
             final ServerWorld world = context.getSource().getWorld();
             final SpawnPointManager spawnPointManager = SpawnPointManager.getInstance(world);
             spawnPointManager.resetSpawnPoints();
@@ -261,6 +283,7 @@ public class SpawnpointsCommand {
          */
         public static LiteralArgumentBuilder<ServerCommandSource> command =
                 literal("reset")
+                        .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints.reset", 2))
                         .executes(ResetCommand::execute)
                         .then(argumentBuilder);
     }
@@ -270,6 +293,7 @@ public class SpawnpointsCommand {
      */
     public static final LiteralArgumentBuilder<ServerCommandSource> command =
             literal("spawnpoints")
+                    .requires(source -> PermissionsService.sourceHasPermission(source, "command.spawnpoints", 2))
                     .then(GeneratorCommand.command)
                     .then(ResetCommand.command);
 }
